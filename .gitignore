@@ -1,4 +1,10 @@
 #################
+## Temporary Exclusions
+#################
+conn.php
+.idea/
+
+#################
 ## Eclipse
 #################
 
@@ -140,7 +146,6 @@ csx
 AppPackages/
 
 # Others
-sql/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
