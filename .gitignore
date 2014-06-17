@@ -2,6 +2,7 @@
 ## Temporary Exclusions
 #################
 conn.php
+_G.cs
 .idea/
 
 #################
