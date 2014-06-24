@@ -94,6 +94,7 @@
     <Compile Include="Query.cs" />
     <Compile Include="responses\jumble.cs" />
     <Compile Include="responses\replace.cs" />
+    <Compile Include="StringSanitizer.cs" />
     <Compile Include="_G.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -14,9 +14,9 @@ namespace bot {
                 responseTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.responses", StringComparison.Ordinal)).ToArray();
         }
 
-        public static void callResponse(String responseName) {
+        public static void callResponse(String responseName, string parameters, Message msg) {
             loadResponseTypes();
-            //responseTypes[0].GetMethod("test").Invoke(null, "");
+            responseTypes.First(t => t.Name == responseName).GetMethod("performOperation").Invoke(null, new Object[]{(object)parameters, (object)msg});
         }
 
         public static Type[] getResponseTypes() {

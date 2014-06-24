@@ -7,16 +7,32 @@ using MySql.Data.MySqlClient;
 
 namespace bot {
     static class Query {
-        static object Scalar(string query, MySqlConnection conn) {
-            return (new MySqlCommand(query, conn)).ExecuteScalar();
+        static public object Scalar(string query, MySqlConnection conn) {
+            try {
+                return (new MySqlCommand(query, conn)).ExecuteScalar();
+            } catch(Exception e) {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
 
-        static void Quiet(string query, MySqlConnection conn) {
-            (new MySqlCommand(query, conn)).ExecuteNonQuery();
+        static public bool Quiet(string query, MySqlConnection conn) {
+            try {
+                (new MySqlCommand(query, conn)).ExecuteNonQuery();
+                return true;
+            } catch(Exception e) {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
 
-        static MySqlDataReader Reader(string query, MySqlConnection conn) {
-            // TODO write this
+        static public MySqlDataReader Reader(string query, MySqlConnection conn) {
+            try {
+                return (new MySqlCommand(query, conn)).ExecuteReader();
+            } catch(Exception e) {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
     }
 }
