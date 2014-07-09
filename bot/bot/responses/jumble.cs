@@ -8,7 +8,7 @@ using System.Reflection;
 namespace bot.responses {
     class jumble {
         static public string[] getInfo() {
-            return new string[] {"junble"/*typeof(jumble).Name*/, "Jumble Message",
+            return new string[] {typeof(jumble).Name, "Jumble Message",
                 "Takes all words in the sentence and rearranges them randomly, sending the result to the chat."};
         }
 

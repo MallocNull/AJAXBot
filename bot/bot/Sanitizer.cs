@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace bot {
-    class StringSanitizer {
+    class Sanitizer {
         public static String Sanitize(String str) {
             return str.Replace("'", "\\'");
         }

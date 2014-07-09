@@ -91,10 +91,12 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="Condition.cs" />
+    <Compile Include="ConditionChecker.cs" />
+    <Compile Include="conditions\contains.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="responses\jumble.cs" />
     <Compile Include="responses\replace.cs" />
-    <Compile Include="StringSanitizer.cs" />
+    <Compile Include="Sanitizer.cs" />
     <Compile Include="_G.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,9 +108,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="conditions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
