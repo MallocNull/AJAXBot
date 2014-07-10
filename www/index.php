@@ -23,6 +23,7 @@ if($_GET["jew"] == "true")
     <center>
         <h1>Admin Login</h1>
         <?php if($err) { ?><h3 style="color: red;"><?php echo $err; ?></h3><?php } ?>
+        <p>Javascript must be enabled for proper functionality.</p>
         <form method="post" action="index.php">
             <table border="0">
             <tr><td style="text-align: right;">Username:</td><td><input type="text" name="name" /></td></tr>

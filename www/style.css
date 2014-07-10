@@ -17,3 +17,11 @@ body {
     font-family: Times New Roman;
     font-size: 16px;
 }
+
+.hide {
+    display: none;
+}
+
+.fakelink:hover {
+    cursor: pointer;
+}

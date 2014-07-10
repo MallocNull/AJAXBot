@@ -93,6 +93,7 @@
     <Compile Include="Condition.cs" />
     <Compile Include="ConditionChecker.cs" />
     <Compile Include="conditions\contains.cs" />
+    <Compile Include="NavigationNode.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="responses\jumble.cs" />
     <Compile Include="responses\replace.cs" />
