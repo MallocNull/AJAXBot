@@ -1,11 +1,11 @@
 <html>
 <head>
-    <title>AJAX Bot Administration</title>
+    <title><?php echo $config->name; ?> Administration</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <center>
-    <h1>Control Panel</h1>
+    <h1><?php echo $config->name; ?> Control Panel</h1>
     <h4>
         <?php
             $request = substr($_SERVER["REQUEST_URI"], strrpos($_SERVER["REQUEST_URI"], "/")+1);

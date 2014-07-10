@@ -17,7 +17,7 @@ include("header.php"); ?>
                             <input type="text" name="tzHour" maxlength="2" value="<?php echo substr($config->timezone, 1, 2); ?>" style="width:20px;" />
                             :
                             <input type="text" name="tzMins" maxlength="2" value="<?php echo substr($config->timezone, 4); ?>" style="width:20px;" />
-                            <br />DST? <input type="checkbox" name="dst"<?php if($config->dst) { ?> checked="true"<?php } ?> />
+                            <br /><abbr title="Daylight Savings Time?">DST?</abbr> <input type="checkbox" name="dst"<?php if($config->dst) { ?> checked="true"<?php } ?> />
                         </td></tr>
                     <tr><td style="text-align: right;">Chat Username:</td><td><input type="text" name="username" value="<?php echo $config->username; ?>" /></td></tr>
                     <tr><td style="text-align: right;">Bot Name:</td><td><input type="text" name="username" value="<?php echo $config->name; ?>" /></td></tr>
