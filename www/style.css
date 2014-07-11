@@ -25,3 +25,13 @@ body {
 .fakelink:hover {
     cursor: pointer;
 }
+
+.error {
+    /*font-weight: bold;*/
+}
+
+.block {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

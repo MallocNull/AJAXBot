@@ -17,7 +17,21 @@ namespace bot {
     class Bot {
         static string tmp;
 
+        static List<NavigationNode> navigationList = new List<NavigationNode>();
         static List<Response> responseList = new List<Response>();
+
+        public static void loadNavigationList() {
+            navigationList = new List<NavigationNode>();
+            var r = Query.Reader("SELECT * FROM `navigate`", _G.conn);
+            while(r.Read()) {
+                navigationList.Add(new NavigationNode(
+                    r.GetInt32("findtype"),
+                    r.GetString("locator"),
+                    r.GetInt32("action"),
+                    r.GetString("parameter")));
+            }
+            r.Close();
+        }
 
         public static void loadResponseList() {
             responseList = new List<Response>();
@@ -33,10 +47,12 @@ namespace bot {
         }
 
         static void Main(string[] args) {
-            _G.conn = new MySqlConnection("SERVER="+ _G.serveraddr +";DATABASE="+ _G.dbname +";UID="+ _G.dbuser +";PASSWORD="+ _G.dbpass +";");
-            _G.conn.Open();
+            _G.loadDatabaseInfo();
+            _G.conn = _G.spawnNewConnection();
+            _G.errconn = _G.spawnNewConnection();
 
             _G.loadConfig();
+            loadResponseList();
 
             tmp = "DELETE FROM resptypes WHERE ";
             foreach(Type t in ResponseCaller.getResponseTypes()) {
@@ -62,9 +78,11 @@ namespace bot {
             tmp = tmp.Substring(0, tmp.Length - 5);
             Query.Quiet(tmp, _G.conn);
 
-            _G.updateHeartbeat();
+            _G.driver = new FirefoxDriver();
+            foreach(NavigationNode node in navigationList)
+                node.performNavigation(_G.driver);
 
-            _G.startThread(_G.pulseThread);
+            _G.startThread(Pulse.pulseThread);
 
             Console.WriteLine(_G.propername +" has started successfully.");
 

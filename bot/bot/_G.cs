@@ -1,8 +1,4 @@
-﻿/*
- * MODIFY THIS FILE TO FIT YOUR SERVER'S CONFIGURATION!
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,13 +14,15 @@ using MySql.Data.MySqlClient;
 using System.Threading;
 
 namespace bot {
-    static class _GG {
-        const string serveraddr = "ADDR";
-        const string dbuser = "NAME";
-        const string dbpass = "PWD";
-        const string dbname = "DATABASE_NAME";
+    static class _G {
+        static string[] dbinfo = new string[4];
 
         static List<Thread> runningThreads = new List<Thread>();
+
+        public static FirefoxDriver driver;
+        /*
+         * TODO cross-thread driver protection
+         */
 
         public static string timezone = "+00:00";
         public static bool observeDST = false;
@@ -34,6 +32,19 @@ namespace bot {
         public static int defaultCooldown = 300;
 
         public static MySqlConnection conn;
+        public static MySqlConnection errconn;
+
+        public static bool loadDatabaseInfo() {
+            try {
+                System.IO.StreamReader r = new System.IO.StreamReader("dbinfo.txt");
+                for(int i = 0; i < 4; i++)
+                    dbinfo[i] = r.ReadLine();
+            } catch(Exception e) {
+                Environment.FailFast("Error attempting to read from dbinfo.txt: "+e.Message+"\n\nProper format:\nSERVER ADDRESS\nUSERNAME\nPASSWORD\nDATABASE_NAME");
+                return false;
+            }
+            return true;
+        }
 
         public static bool isDaylightSavings() {
             return (observeDST) ? TimeZoneInfo.GetSystemTimeZones().First(o => o.DisplayName.ToLower().Contains("central time")).IsDaylightSavingTime(DateTime.UtcNow) : false;
@@ -47,11 +58,6 @@ namespace bot {
             return (new DateTimeOffset(utcTime)).ToOffset(TimeSpan.Parse(timezone).Add(TimeSpan.FromHours(isDaylightSavings() ? 1 : 0))).DateTime;
         }
 
-        public static void updateHeartbeat() {
-            string beat = getLocalTimeFromUTC().ToString();
-            Query.Quiet("UPDATE `updater` SET `heartbeat`='" + beat + "' WHERE `id`=1", conn);
-        }
-
         public static void loadConfig() {
             var r = Query.Reader("SELECT * FROM `config` WHERE `id`=1", conn);
             r.Read();
@@ -61,31 +67,23 @@ namespace bot {
             timezone = r.GetString("timezone");
             observeDST = r.GetBoolean("dst");
             r.Close();
+            Bot.loadNavigationList();
         }
 
-        public static void checkUpdates() {
-            var r = Query.Reader("SELECT * FROM `updater` WHERE `id`=1", conn);
-            r.Read();
-            if(r.GetBoolean("responses"))
-                Bot.loadResponseList();
-            //if(r.GetBoolean("autonomous")) TODO implement with autonomous
-
-            if(r.GetBoolean("config"))
-                loadConfig();
-            r.Close();
-        }
-
-        public static void pulseThread() {
-            DateTime t = new DateTime(0);
-
-            while(true) {
-                if((DateTime.Now - t).TotalSeconds > 30) {
-                    updateHeartbeat();
-                    checkUpdates();
-                    t = DateTime.Now;
-                    Console.WriteLine("pulsed");
-                }
+        public static MySqlConnection spawnNewConnection() {
+            MySqlConnection tmp;
+            try {
+                tmp = new MySqlConnection("SERVER=" + dbinfo[0] + ";DATABASE=" + dbinfo[3] + ";UID=" + dbinfo[1] + ";PASSWORD=" + dbinfo[2] + ";");
+                tmp.Open();
+            } catch(Exception e) {
+                Environment.FailFast("Could not open database connection!");
+                return null;
             }
+            return tmp;
+        }
+
+        public static void logError(string err) {
+            (new MySqlCommand("INSERT INTO `error` (`time`,`msg`) VALUES ('"+ getLocalTimeFromUTC() +" UTC"+ timezone +"','"+err+"')", errconn)).ExecuteNonQuery();
         }
 
         public delegate void threadFunc();

@@ -2,7 +2,7 @@
 ## Temporary Exclusions
 #################
 conn.php
-_G.cs
+dbinfo.txt
 .idea/
 
 #################

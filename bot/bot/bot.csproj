@@ -92,8 +92,9 @@
     <Compile Include="Bot.cs" />
     <Compile Include="Condition.cs" />
     <Compile Include="ConditionChecker.cs" />
-    <Compile Include="conditions\contains.cs" />
+    <Compile Include="conditions\msgcontains.cs" />
     <Compile Include="NavigationNode.cs" />
+    <Compile Include="Pulse.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="responses\jumble.cs" />
     <Compile Include="responses\replace.cs" />
@@ -104,12 +105,14 @@
     <Compile Include="Response.cs" />
     <Compile Include="responses\sendmsg.cs" />
     <Compile Include="ResponseCaller.cs" />
-    <Compile Include="_GG.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="dbinfo.txt" />
+    <Content Include="dbinfo_generic.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

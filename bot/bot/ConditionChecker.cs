@@ -14,9 +14,9 @@ namespace bot {
                 conditionTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.conditions", StringComparison.Ordinal)).ToArray();
         }
 
-        public static bool checkCondition(String conditionName, string check, string parameter) {
+        public static bool checkCondition(String conditionName, Message msg, string parameter) {
             loadConditionTypes();
-            return (bool)conditionTypes.First(t => t.Name == conditionName).GetMethod("performCheck").Invoke(null, new Object[] { (object)parameter });
+            return (bool)conditionTypes.First(t => t.Name == conditionName).GetMethod("performCheck").Invoke(null, new Object[] { (object)msg, (object)parameter });
         }
 
         public static Type[] getConditions() {

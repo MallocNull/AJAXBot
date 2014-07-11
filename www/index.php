@@ -45,8 +45,17 @@ if($_GET["jew"] == "true")
             echo " UTC". $config->timezone ."". (($config->dst)?" in accordance to daylight savings.":"disregarding daylight savings.");
             ?>
         </fieldset>
-        <?php
-        ?>
+        <br />
+        <fieldset class="wide">
+            <legend>Error Log</legend>
+            <a href="jews.php?do=cerrs">Clear Error List</a>
+            <?php
+            $q = mysql_query("SELECT * FROM `error` ORDER BY `id` DESC");
+            while($err = mysql_fetch_object($q)) {
+                echo "<p class='error'>". $err->time ." - ". $err->msg ."</p>";
+            }
+            ?>
+        </fieldset>
     </center>
     <?php include("footer.php"); ?>
 <?php } ?>

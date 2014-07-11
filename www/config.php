@@ -29,6 +29,30 @@ if($_POST["changeConfig"]) {
     }
 }
 
+function select() {
+    echo "selected='selected'";
+}
+
+if($_POST["updateNav"]) {
+    mysql_query("TRUNCATE `navigate`");
+    mysql_query("ALTER TABLE `navigate` AUTO_INCREMENT=1");
+    for($rowCount = 0;;$rowCount++) {
+        $r = $rowCount + 1;
+        if(!isset($_POST["r".($rowCount+1)."c1"])) break;
+        if($_POST['r'.$r.'c1'] == 0) {
+            if(substr($_POST['r'.$r.'c2'], 0, 4) != "http")
+                $_POST['r'.$r.'c2'] = "http://". $_POST['r'.$r.'c2'];
+        }
+        mysql_query("INSERT INTO `navigate` (`findtype`,`locator`,`action`,`parameter`)
+            VALUES (
+                ". $_POST['r'.$r.'c1'] .",
+                '". mysql_real_escape_string(trim($_POST['r'.$r.'c2'])) ."',
+                '". $_POST['r'.$r.'c3'] ."',
+                '". mysql_real_escape_string(trim($_POST['r'.$r.'c4'])) ."'
+            )");
+    }
+}
+
 $rowCount = mysql_num_rows(mysql_query("SELECT * FROM `navigate`"));
 
 include("header.php"); ?>
@@ -67,24 +91,23 @@ include("header.php"); ?>
         document.getElementById("navContainer").innerHTML = "";
 
         for(i = 0; i < tmp.length; i++) {
-            if(tmp[i].getAttribute("id") != "r"+(i+1)) {
-                tmp[i].setAttribute("id","r"+(i+1));
-                tmp[i].innerHTML = (i+1) + tmp[i].innerHTML.substr(tmp[i].innerHTML.indexOf("."));
-                var tmpc = tmp[i].children;
-                for(j = 0; j < 4; j++) {
-                    tmpc[j].setAttribute("id","r"+(i+1)+"c"+(j+1));
-                    tmpc[j].setAttribute("name","r"+(i+1)+"c"+(j+1));
-                    if(j%2==0 && j < 4) {
-                        tmpc[j].selectedIndex = (j==0)?selectedValues[i*4]:selectedValues[i*4+2];
-                        tmpc[j].setAttribute("onchange","handleColumnChange("+(i+1)+","+(j+1)+");");
-                    } else if(j < 4) {
-                        tmpc[j].value = (j==1)?selectedValues[i*4+1]:selectedValues[i*4+3];
-                    } else if(j == 4)
-                        tmpc[j].setAttribute("onchange","handleRowUp("+(i+1)+");");
-                    else if(j == 4)
-                        tmpc[j].setAttribute("onchange","handleRowDown("+(i+1)+");");
-                    else if(j == 4)
-                        tmpc[j].setAttribute("onchange","handleRowDelete("+(i+1)+");");
+            tmp[i].setAttribute("id","r"+(i+1));
+            tmp[i].innerHTML = (i+1) + tmp[i].innerHTML.substr(tmp[i].innerHTML.indexOf("."));
+            var tmpc = tmp[i].children;
+            for(j = 0; j < 7; j++) {
+                tmpc[j].setAttribute("id","r"+(i+1)+"c"+(j+1));
+                tmpc[j].setAttribute("name","r"+(i+1)+"c"+(j+1));
+                if(j%2==0 && j < 4) {
+                    tmpc[j].selectedIndex = (j==0)?selectedValues[i*4]:selectedValues[i*4+2];
+                    tmpc[j].setAttribute("onchange","handleColumnChange("+(i+1)+","+(j+1)+");");
+                } else if(j < 4) {
+                    tmpc[j].value = (j==1)?selectedValues[i*4+1]:selectedValues[i*4+3];
+                } else if(j == 4) {
+                    tmpc[j].setAttribute("onclick","handleRowUp("+(i+1)+");");
+                } else if(j == 5) {
+                    tmpc[j].setAttribute("onclick","handleRowDown("+(i+1)+");");
+                } else if(j == 6) {
+                    tmpc[j].setAttribute("onclick","handleRowDelete("+(i+1)+");");
                 }
             }
             document.getElementById("navContainer").appendChild(tmp[i]);
@@ -93,19 +116,49 @@ include("header.php"); ?>
 
     function handleRowUp(r) {
         if(r != 1) {
-            var data = Array();
             var child = document.getElementById("r"+r);
-            data[0] = child.children[0].selectedIndex;
-            data[0] = child.children[0].selectedIndex;
-            data[0] = child.children[0].selectedIndex;
-            data[0] = child.children[0].selectedIndex;
-            var clone = child.cloneNode();
-            document.getElementById("navContainer").removeChild();
+            var clone = child.cloneNode(true);
+            clone.children[0].selectedIndex = child.children[0].selectedIndex;
+            clone.children[1].value = child.children[1].value;
+            clone.children[2].selectedIndex = child.children[2].selectedIndex;
+            clone.children[3].value = child.children[3].value;
+            document.getElementById("navContainer").removeChild(child);
+            document.getElementById("navContainer").insertBefore(clone, document.getElementById("r"+(r-1)));
+            redrawTable();
         }
+    }
+
+    function handleRowDown(r) {
+        if(r != rowCount) {
+            var child = document.getElementById("r"+r);
+            var clone = child.cloneNode(true);
+            clone.children[0].selectedIndex = child.children[0].selectedIndex;
+            clone.children[1].value = child.children[1].value;
+            clone.children[2].selectedIndex = child.children[2].selectedIndex;
+            clone.children[3].value = child.children[3].value;
+            document.getElementById("navContainer").removeChild(child);
+            document.getElementById("navContainer").insertBefore(clone, document.getElementById("r"+(r+2)));
+            redrawTable();
+        }
+    }
+
+    function handleRowDelete(r) {
+        rowCount--;
+        if(rowCount == 0) {
+            document.getElementById("navSubmit").style.display = "none";
+            document.getElementById("addSelect").remove(3);
+            document.getElementById("addSelect").remove(2);
+            document.getElementById("addPosition").style.display = "none";
+        }
+        var test = document.getElementById("navContainer").removeChild(document.getElementById("r"+r));
+        redrawTable();
+        populateRowDropdown();
     }
 
     function handleAddRow() {
         if(rowCount == 0) {
+            document.getElementById("navSubmit").style.display = "block";
+
             var element = document.createElement("option");
             element.text = "after";
             document.getElementById("addSelect").add(element);
@@ -188,12 +241,12 @@ include("header.php"); ?>
                             UTC
                             <select name="tzSign">
                                 <option value="+">+</option>
-                                <option value="-"<?php if(substr($config->timezone, 0, 1) == "-") { ?> selected="true"<?php } ?>>-</option>
+                                <option value="-"<?php if(substr($config->timezone, 0, 1) == "-") { ?> selected="selected"<?php } ?>>-</option>
                             </select>
                             <input type="text" name="tzHour" maxlength="2" value="<?php echo substr($config->timezone, 1, 2); ?>" style="width:20px;" />
                             :
                             <input type="text" name="tzMins" maxlength="2" value="<?php echo substr($config->timezone, 4); ?>" style="width:20px;" />
-                            <br /><abbr title="Daylight Savings Time?">DST?</abbr> <input type="checkbox" name="dst"<?php if($config->dst) { ?> checked="true"<?php } ?> />
+                            <br /><abbr title="Daylight Savings Time?">DST?</abbr> <input type="checkbox" name="dst"<?php if($config->dst) { ?> checked="checked"<?php } ?> />
                         </td></tr>
                     <tr><td style="text-align: right;">Chat Username:</td><td><input type="text" name="username" value="<?php echo $config->username; ?>" /></td></tr>
                     <tr><td style="text-align: right;">Bot Name:</td><td><input type="text" name="name" value="<?php echo $config->name; ?>" /></td></tr>
@@ -206,9 +259,37 @@ include("header.php"); ?>
     <fieldset class="wide">
         <legend>Navigation Instructions</legend>
         <p style="margin-top: 0;">In order for the bot to work, it needs to know how to both log into the website and get into the chat. The following is a user-defined method for the bot to perform this task.</p>
-        <span id="navContainer">
-
-        </span>
+        <form method="post" action="">
+            <span id="navContainer">
+                <?php
+                $q = mysql_query("SELECT * FROM `navigate`");
+                while($row = mysql_fetch_object($q)) { ?>
+                <p id="r<?php echo $row->id; ?>">
+                    <?php echo $row->id; ?>.
+                    <select name='r<?php echo $row->id; ?>c1' id='r<?php echo $row->id; ?>c1' onchange='handleColumnChange(<?php echo $row->id; ?>,1);'>
+                        <option value='0' <?php if($row->findtype == 0) select(); ?>>Go to URL</option>
+                        <option value='1' <?php if($row->findtype == 1) select(); ?>>Find element by link text</option>
+                        <option value='2' <?php if($row->findtype == 2) select(); ?>>Find element by ID</option>
+                        <option value='3' <?php if($row->findtype == 3) select(); ?>>Find element by name</option>
+                        <option value='4' <?php if($row->findtype == 4) select(); ?>>Find element by class</option>
+                        <option value='5' <?php if($row->findtype == 5) select(); ?>>Find element by tag name</option>
+                    </select>
+                     <input type='text' name='r<?php echo $row->id; ?>c2' id='r<?php echo $row->id; ?>c2' value="<?php echo $row->locator; ?>" />
+                    <select name='r<?php echo $row->id; ?>c3' id='r<?php echo $row->id; ?>c3' onchange='handleColumnChange(<?php echo $row->id; ?>,3);' <?php if($row->findtype == 0) { ?>style='display: none;'<?php } ?>>
+                        <option value='0' <?php if($row->action == 0) select(); ?>>and click it.</option>
+                        <option value='1' <?php if($row->action == 1) select(); ?>>and type</option>
+                        <option value='2' <?php if($row->action == 2) select(); ?>>and select the value</option>
+                        <option value='3' <?php if($row->action == 3) select(); ?>>and select the index</option>
+                    </select>
+                     <input type='text' name='r<?php echo $row->id; ?>c4' id='r<?php echo $row->id; ?>c4' <?php if($row->findtype == 0 || $row->action == 0) { ?>style='display: none;'<?php } ?> value="<?php echo $row->parameter; ?>" />
+                     <img src='img/arrow_up.png' class='fakelink' style='vertical-align: text-bottom;' onclick='' />
+                     <img src='img/arrow_down.png' class='fakelink' style='vertical-align: text-bottom;' onclick='' />
+                     <img src='img/delete.png' class='fakelink' style='vertical-align: text-bottom;' onclick='' />
+                </p>
+                <?php } ?>
+            </span>
+            <p id="navSubmit"<?php if($rowCount == 0) { ?> style="display: none;" <?php } ?>><input type="submit" value="Update Navigation" name="updateNav" /></p>
+        </form>
         <p style="margin-bottom: 0">Add instruction
             <select id="addSelect" onchange="handleAddSelectChange();">
                 <option selected="selected">at the end</option>
@@ -234,5 +315,6 @@ include("header.php"); ?>
         }
     }
     populateRowDropdown();
+    redrawTable();
 </script>
 <?php include("footer.php"); ?>
