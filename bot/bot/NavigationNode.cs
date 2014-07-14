@@ -7,9 +7,6 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Internal;
 using OpenQA.Selenium.Support.UI;
-using SuperSocket;
-using SuperSocket.SocketBase;
-using SuperWebSocket;
 using MySql.Data.MySqlClient;
 using System.Threading;
 

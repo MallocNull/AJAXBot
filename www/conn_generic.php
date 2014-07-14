@@ -5,6 +5,14 @@ session_start();
 
 $config = mysql_fetch_object(mysql_query("SELECT * FROM `config` WHERE `id`=1"));
 
+function escapeDoubleQuotes($str) {
+    return str_replace('"','\\"',$str);
+}
+
+function escapeSingleQuotes($str) {
+    return str_replace("'","\\'",$str);
+}
+
 function checkIfLoggedIn() {
     if(mysql_num_rows(mysql_query("SELECT * FROM `admin` WHERE `username`='". mysql_real_escape_string($_SESSION['user']) ."' AND `password`='". $_SESSION['pwd'] ."'")) > 0)
         return true;

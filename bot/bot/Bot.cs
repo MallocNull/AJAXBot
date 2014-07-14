@@ -7,9 +7,6 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Internal;
 using OpenQA.Selenium.Support.UI;
-using SuperSocket;
-using SuperSocket.SocketBase;
-using SuperWebSocket;
 using MySql.Data.MySqlClient;
 using System.Threading;
 
@@ -81,6 +78,11 @@ namespace bot {
             _G.driver = new FirefoxDriver();
             foreach(NavigationNode node in navigationList)
                 node.performNavigation(_G.driver);
+            try {
+                (new WebDriverWait(_G.driver, new TimeSpan(0, 0, 300))).Until(ExpectedConditions.ElementExists(By.Id("inputField")));
+            } catch(Exception e) {
+                _G.criticalError("Navigation to chat failed! Fix instructions.", true);
+            }
 
             _G.startThread(Pulse.pulseThread);
 

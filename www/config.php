@@ -248,8 +248,8 @@ include("header.php"); ?>
                             <input type="text" name="tzMins" maxlength="2" value="<?php echo substr($config->timezone, 4); ?>" style="width:20px;" />
                             <br /><abbr title="Daylight Savings Time?">DST?</abbr> <input type="checkbox" name="dst"<?php if($config->dst) { ?> checked="checked"<?php } ?> />
                         </td></tr>
-                    <tr><td style="text-align: right;">Chat Username:</td><td><input type="text" name="username" value="<?php echo $config->username; ?>" /></td></tr>
-                    <tr><td style="text-align: right;">Bot Name:</td><td><input type="text" name="name" value="<?php echo $config->name; ?>" /></td></tr>
+                    <tr><td style="text-align: right;">Chat Username:</td><td><input type="text" name="username" value="<?php echo escapeDoubleQuotes($config->username); ?>" /></td></tr>
+                    <tr><td style="text-align: right;">Bot Name:</td><td><input type="text" name="name" value="<?php echo escapeDoubleQuotes($config->name); ?>" /></td></tr>
                     <tr><td></td><td><input type="submit" name="changeConfig" value="Modify" /></td></tr>
                 </table>
             </form>
@@ -274,14 +274,14 @@ include("header.php"); ?>
                         <option value='4' <?php if($row->findtype == 4) select(); ?>>Find element by class</option>
                         <option value='5' <?php if($row->findtype == 5) select(); ?>>Find element by tag name</option>
                     </select>
-                     <input type='text' name='r<?php echo $row->id; ?>c2' id='r<?php echo $row->id; ?>c2' value="<?php echo $row->locator; ?>" />
+                     <input type='text' name='r<?php echo $row->id; ?>c2' id='r<?php echo $row->id; ?>c2' value="<?php echo escapeDoubleQuotes($row->locator); ?>" />
                     <select name='r<?php echo $row->id; ?>c3' id='r<?php echo $row->id; ?>c3' onchange='handleColumnChange(<?php echo $row->id; ?>,3);' <?php if($row->findtype == 0) { ?>style='display: none;'<?php } ?>>
                         <option value='0' <?php if($row->action == 0) select(); ?>>and click it.</option>
                         <option value='1' <?php if($row->action == 1) select(); ?>>and type</option>
                         <option value='2' <?php if($row->action == 2) select(); ?>>and select the value</option>
                         <option value='3' <?php if($row->action == 3) select(); ?>>and select the index</option>
                     </select>
-                     <input type='text' name='r<?php echo $row->id; ?>c4' id='r<?php echo $row->id; ?>c4' <?php if($row->findtype == 0 || $row->action == 0) { ?>style='display: none;'<?php } ?> value="<?php echo $row->parameter; ?>" />
+                     <input type='text' name='r<?php echo $row->id; ?>c4' id='r<?php echo $row->id; ?>c4' <?php if($row->findtype == 0 || $row->action == 0) { ?>style='display: none;'<?php } ?> value="<?php echo escapeDoubleQuotes($row->parameter); ?>" />
                      <img src='img/arrow_up.png' class='fakelink' style='vertical-align: text-bottom;' onclick='' />
                      <img src='img/arrow_down.png' class='fakelink' style='vertical-align: text-bottom;' onclick='' />
                      <img src='img/delete.png' class='fakelink' style='vertical-align: text-bottom;' onclick='' />

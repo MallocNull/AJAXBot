@@ -8,14 +8,14 @@ using MySql.Data.MySqlClient;
 
 namespace bot {
     class Response {
-        public string conditions;
+        public ConditionHolder conditions;
         public Type responseType;
         public string parameters;
         public int cooldown;
         public int lastCall;
 
         public Response(string conditions, string responseType, string parameters, int cooldown) {
-            this.conditions = conditions;
+            this.conditions = new ConditionHolder(conditions);
             this.responseType = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.responses", StringComparison.Ordinal) && String.Equals(t.Name, responseType, StringComparison.Ordinal)).ToArray()[0];
             this.parameters = parameters;
             this.cooldown = cooldown;
@@ -23,7 +23,7 @@ namespace bot {
         }
 
         public Response(string conditions, int responseId, string parameters, int cooldown) {
-            this.conditions = conditions;
+            this.conditions = new ConditionHolder(conditions);
             string typeName = (string)(new MySqlCommand("SELECT `name` FROM `resptypes` WHERE `id`=" + responseId, _G.conn)).ExecuteScalar();
             this.responseType = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.responses", StringComparison.Ordinal) && String.Equals(t.Name, typeName, StringComparison.Ordinal)).ToArray()[0];
             this.parameters = parameters;
