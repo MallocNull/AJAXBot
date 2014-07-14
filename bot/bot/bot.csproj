@@ -74,6 +74,7 @@
     <Compile Include="Bot.cs" />
     <Compile Include="Condition.cs" />
     <Compile Include="ConditionChecker.cs" />
+    <Compile Include="ConditionHolder.cs" />
     <Compile Include="conditions\msgcontains.cs" />
     <Compile Include="NavigationNode.cs" />
     <Compile Include="Pulse.cs" />

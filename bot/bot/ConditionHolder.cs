@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace bot {
     class ConditionHolder {
-        public ConditionHolder(string conditions) {
+        
+
+        public ConditionHolder(string condstring) {
 
         }
     }
