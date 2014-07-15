@@ -19,7 +19,7 @@ namespace bot {
 
         public static void loadNavigationList() {
             navigationList = new List<NavigationNode>();
-            var r = Query.Reader("SELECT * FROM `navigate`", _G.conn);
+            var r = Query.Reader("SELECT * FROM `navigate`", _G.spawnNewConnection());
             while(r.Read()) {
                 navigationList.Add(new NavigationNode(
                     r.GetInt32("findtype"),
@@ -32,7 +32,7 @@ namespace bot {
 
         public static void loadResponseList() {
             responseList = new List<Response>();
-            var r = Query.Reader("SELECT * FROM `responses`", _G.conn);
+            var r = Query.Reader("SELECT * FROM `responses`", _G.spawnNewConnection());
             while(r.Read()) {
                 responseList.Add(new Response(
                     r.GetString("conditions"),

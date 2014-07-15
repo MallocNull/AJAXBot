@@ -92,6 +92,15 @@ namespace bot {
             Query.Quiet("INSERT INTO `error` (`time`,`msg`) VALUES ('"+ getLocalTimeFromUTC() +" UTC"+ timezone +"','"+err+"')", errconn);
         }
 
+        public static int indexOfNth(string str, char c, int index) {
+            int fcount = 0;
+            for(int i = 0; i < str.Length; i++) {
+                if(str[i] == c) fcount++;
+                if(fcount == index) return i;
+            }
+            return -1;
+        }
+
         public delegate void threadFunc();
         public static void startThread(threadFunc t) {
             runningThreads.Add((new Thread(new ThreadStart(t))));
