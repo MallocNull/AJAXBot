@@ -1,11 +1,10 @@
 <?php include("conn.php");
 
 $condtypes = array();
-$resptypes = array();
 
 $q = mysql_query("SELECT * FROM `conditions`");
 while($cond = mysql_fetch_object($q)) {
-    $condtypes[$cond->id] = array();
+    $condtypes[$cond->id] = $cond->friendlyname;
 }
 
 if($_POST["resptype"]) {
