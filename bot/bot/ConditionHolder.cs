@@ -34,6 +34,7 @@ namespace bot {
                         } else {
 
                         }
+
                         str = condstring.Substring((pair[0] == 0) ? 0 : _G.indexOfNth(condstring, ';', pair[0] + 1) + 1, _G.indexOfNth(condstring, ';', pair[1] + 2) + 1);
                         str = Int32.Parse(str.Substring(0, str.IndexOf(','))) - 1 + str.Substring(str.IndexOf(','));
 

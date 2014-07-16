@@ -96,7 +96,8 @@ namespace bot {
             int fcount = 0;
             for(int i = 0; i < str.Length; i++) {
                 if(str[i] == c) fcount++;
-                if(fcount == index) return i;
+                if(fcount == index) 
+                    return i;
             }
             return -1;
         }
