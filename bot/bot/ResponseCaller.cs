@@ -16,7 +16,12 @@ namespace bot {
 
         public static void callResponse(String responseName, string parameters, Message msg) {
             loadResponseTypes();
-            responseTypes.First(t => t.Name == responseName).GetMethod("performOperation").Invoke(null, new Object[]{(object)parameters, (object)msg});
+            responseTypes.First(t => t.Name == responseName).GetMethod("performOperation").Invoke(null, new Object[] { (object)parameters, (object)msg });
+        }
+
+        public static void callResponse(Type responseType, string parameters, Message msg) {
+            loadResponseTypes();
+            responseType.GetMethod("performOperation").Invoke(null, new Object[] { (object)parameters, (object)msg });
         }
 
         public static Type[] getResponseTypes() {

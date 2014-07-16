@@ -19,6 +19,11 @@ namespace bot {
             return (bool)conditionTypes.First(t => t.Name == conditionName).GetMethod("performCheck").Invoke(null, new Object[] { (object)msg, (object)parameter });
         }
 
+        public static bool checkCondition(Type conditionType, Message msg, string parameter) {
+            loadConditionTypes();
+            return (bool)conditionType.GetMethod("performCheck").Invoke(null, new Object[] { (object)msg, (object)parameter });
+        }
+
         public static Type[] getConditions() {
             loadConditionTypes();
             return conditionTypes;

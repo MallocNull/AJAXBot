@@ -72,10 +72,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="Chat.cs" />
     <Compile Include="Condition.cs" />
     <Compile Include="ConditionChecker.cs" />
     <Compile Include="ConditionHolder.cs" />
+    <Compile Include="conditions\msgcntword.cs" />
     <Compile Include="conditions\msgcontains.cs" />
+    <Compile Include="conditions\msgis.cs" />
+    <Compile Include="conditions\msgstartsw.cs" />
+    <Compile Include="conditions\nameis.cs" />
+    <Compile Include="conditions\random.cs" />
     <Compile Include="NavigationNode.cs" />
     <Compile Include="Pulse.cs" />
     <Compile Include="Query.cs" />

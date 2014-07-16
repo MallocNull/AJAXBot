@@ -5,16 +5,21 @@ if($_POST["changeConfig"]) {
         if(strlen($_POST["tzHour"]) == 2 && is_numeric($_POST["tzHour"]) && strlen($_POST["tzMins"]) == 2 && is_numeric($_POST["tzMins"]) && $_POST["tzHour"] && $_POST["tzMins"]) {
             if(trim($_POST["name"])) {
                 if(trim($_POST["username"])) {
-                    mysql_query("UPDATE `config` SET
-                                `cooldown`='". $_POST['cooldown'] ."',
-                                `name`='". mysql_real_escape_string(trim($_POST['name'])) ."',
-                                `username`='". mysql_real_escape_string(trim($_POST['username'])) ."',
-                                `dst`=". (($_POST['dst'])?"1":"0") .",
-                                `timezone`='". $_POST['tzSign'] . $_POST['tzHour'] .":". $_POST['tzMins'] ."',
-                                `parsechatbot`=". (($_POST['chatbot'])?"1":"0") ."
-                                WHERE `id`=1") or die(mysql_error());
-                    mysql_query("UPDATE `updater` SET `config`=1 WHERE `id`=1");
-                    $config = mysql_fetch_object(mysql_query("SELECT * FROM `config` WHERE `id`=1"));
+                    if(is_numeric($_POST["buffsize"]) && $_POST["buffsize"] > 0 && $_POST["buffsize"]) {
+                        mysql_query("UPDATE `config` SET
+                                    `cooldown`='". $_POST['cooldown'] ."',
+                                    `name`='". mysql_real_escape_string(trim($_POST['name'])) ."',
+                                    `username`='". mysql_real_escape_string(trim($_POST['username'])) ."',
+                                    `dst`=". (($_POST['dst'])?"1":"0") .",
+                                    `timezone`='". $_POST['tzSign'] . $_POST['tzHour'] .":". $_POST['tzMins'] ."',
+                                    `parsechatbot`=". (($_POST['chatbot'])?"1":"0") .",
+                                    `buffersize`=". $_POST['buffsize'] ."
+                                    WHERE `id`=1") or die(mysql_error());
+                        mysql_query("UPDATE `updater` SET `config`=1 WHERE `id`=1");
+                        $config = mysql_fetch_object(mysql_query("SELECT * FROM `config` WHERE `id`=1"));
+                    } else {
+                        $configerr = "Buffer size is not a positive integer!";
+                    }
                 } else {
                     $configerr = "Chat username is empty!";
                 }
@@ -250,6 +255,7 @@ include("header.php"); ?>
                         </td></tr>
                     <tr><td style="text-align: right;">Chat Username:</td><td><input type="text" name="username" value="<?php echo escapeDoubleQuotes($config->username); ?>" /></td></tr>
                     <tr><td style="text-align: right;">Bot Name:</td><td><input type="text" name="name" value="<?php echo escapeDoubleQuotes($config->name); ?>" /></td></tr>
+                    <tr><td style="text-align: right;">Chat Buffer Size:</td><td><input type="text" name="buffsize" value="<?php echo $config->buffersize; ?>" /> messages</td></tr>
                     <tr><td></td><td><input type="submit" name="changeConfig" value="Modify" /></td></tr>
                 </table>
             </form>

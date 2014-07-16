@@ -1,8 +1,6 @@
 <?php
 include("conn.php");
 
-var_dump($config);
-
 $err = $_GET["err"];
 
 if($_POST["loginAttempt"]) {

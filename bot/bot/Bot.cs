@@ -19,7 +19,8 @@ namespace bot {
 
         public static void loadNavigationList() {
             navigationList = new List<NavigationNode>();
-            var r = Query.Reader("SELECT * FROM `navigate`", _G.spawnNewConnection());
+            var tmp = _G.spawnNewConnection();
+            var r = Query.Reader("SELECT * FROM `navigate`", tmp);
             while(r.Read()) {
                 navigationList.Add(new NavigationNode(
                     r.GetInt32("findtype"),
@@ -28,19 +29,24 @@ namespace bot {
                     r.GetString("parameter")));
             }
             r.Close();
+            tmp.Close();
         }
 
         public static void loadResponseList() {
             responseList = new List<Response>();
-            var r = Query.Reader("SELECT * FROM `responses`", _G.spawnNewConnection());
+            var tmp = _G.spawnNewConnection();
+            var r = Query.Reader("SELECT * FROM `responses`", tmp);
             while(r.Read()) {
                 responseList.Add(new Response(
                     r.GetString("conditions"),
                     r.GetInt32("respid"),
                     r.GetString("parameters"),
                     r.GetInt32("cooldown")));
+                bool value = responseList.Last().conditions.calculateValue(new Message("guy", "the time is nigh to say nicenight"));
+                value = !value;
             }
             r.Close();
+            tmp.Close();
         }
 
         static void Main(string[] args) {
@@ -76,19 +82,47 @@ namespace bot {
             Query.Quiet(tmp, _G.conn);
 
             _G.driver = new FirefoxDriver();
-            foreach(NavigationNode node in navigationList)
-                node.performNavigation(_G.driver);
-            try {
-                (new WebDriverWait(_G.driver, new TimeSpan(0, 0, 300))).Until(ExpectedConditions.ElementExists(By.Id("inputField")));
-            } catch(Exception e) {
-                _G.criticalError("Navigation to chat failed! Fix instructions.", true);
+
+            while(true) {
+                try {
+                    foreach(NavigationNode node in navigationList)
+                        node.performNavigation(_G.driver);
+                    try {
+                        (new WebDriverWait(_G.driver, new TimeSpan(0, 0, 300))).Until(ExpectedConditions.ElementExists(By.Id("inputField")));
+                    } catch(Exception e) {
+                        _G.criticalError("Navigation to chat failed! Fix instructions.", true);
+                    }
+
+                    _G.startThread(Pulse.pulseThread);
+
+                    // TODO add autonomous thread start
+
+                    Chat.reloadContext(_G.driver);
+
+                    Console.WriteLine(_G.propername + " has started successfully.");
+
+                    while(Chat.isChatting(_G.driver)) {
+                        Message msg = Chat.waitForNewMessage(_G.driver);
+                        if(msg == null) break;
+                        if(msg.msg == "!dump") {
+                            foreach(Response r in responseList)
+                                Chat.sendMessage("IF "+ r.condstr +" THEN "+ r.responseType.Name);
+                        }
+                        if(msg.msg == "!update") {
+                            Bot.loadResponseList();
+                            Chat.sendMessage("response list updated");
+                        }
+                        foreach(Response response in responseList)
+                            response.triggerResponse(msg);
+                    }
+
+                    _G.stopAllThreads();
+
+                    Console.WriteLine("Restarting bot ...");
+                } catch(Exception err) {
+                    _G.criticalError("Main thread experienced unexpected fatal error! Details: "+ err.Message +" in "+ err.StackTrace, true);
+                }
             }
-
-            _G.startThread(Pulse.pulseThread);
-
-            Console.WriteLine(_G.propername +" has started successfully.");
-
-            while(true) ;
         }
     }
 }

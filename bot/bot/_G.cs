@@ -25,6 +25,7 @@ namespace bot {
         public static bool observeDST = false;
         public static string username = "";
         public static string propername = "AJAX Bot";
+        public static int bufferSize = 50;
 
         public static int defaultCooldown = 300;
 
@@ -72,6 +73,7 @@ namespace bot {
             propername = r.GetString("name");
             timezone = r.GetString("timezone");
             observeDST = r.GetBoolean("dst");
+            bufferSize = r.GetInt32("buffersize");
             r.Close();
             Bot.loadNavigationList();
         }
@@ -92,12 +94,19 @@ namespace bot {
             Query.Quiet("INSERT INTO `error` (`time`,`msg`) VALUES ('"+ getLocalTimeFromUTC() +" UTC"+ timezone +"','"+err+"')", errconn);
         }
 
-        public static int indexOfNth(string str, char c, int index) {
+        public static string Substring(string str, int start, int end) {
+            return str.Substring(start, end - start);
+        }
+
+        public static int indexOfNthCommand(string str, int index) {
             int fcount = 0;
             for(int i = 0; i < str.Length; i++) {
-                if(str[i] == c) fcount++;
+                if(str[i] == ';') {
+                    fcount++;
+                    i += 2;
+                }
                 if(fcount == index) 
-                    return i;
+                    return i+1;
             }
             return -1;
         }
