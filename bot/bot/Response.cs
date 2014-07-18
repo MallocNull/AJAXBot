@@ -34,14 +34,19 @@ namespace bot {
             this.lastCall = new DateTime(0);
         }
 
-        public void triggerResponse(Message msg) {
+        public bool triggerResponse(Message msg) {
             if(cooldown != -1) {
                 if((DateTime.Now - lastCall).TotalSeconds < cooldown)
-                    return;
+                    return false;
             }
             if(msg.name.ToLower() != _G.username.ToLower()) {
-                if(conditions.calculateValue(msg)) ResponseCaller.callResponse(responseType, parameters, msg);
+                if(conditions.calculateValue(msg)) {
+                    ResponseCaller.callResponse(responseType, parameters, msg);
+                    lastCall = DateTime.Now;
+                    return true;
+                } 
             }
+            return false;
         }
     }
 }

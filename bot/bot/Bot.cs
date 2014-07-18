@@ -101,6 +101,8 @@ namespace bot {
 
                     Console.WriteLine(_G.propername + " has started successfully.");
 
+                    DateTime lastAction = new DateTime(0);
+
                     while(Chat.isChatting(_G.driver)) {
                         Message msg = Chat.waitForNewMessage(_G.driver);
                         if(msg == null) break;
@@ -112,15 +114,19 @@ namespace bot {
                             Bot.loadResponseList();
                             Chat.sendMessage("response list updated");
                         }
-                        foreach(Response response in responseList)
-                            response.triggerResponse(msg);
+
+                        foreach(Response response in responseList) {
+                            if((DateTime.Now - lastAction).TotalSeconds >= _G.defaultCooldown) {
+                                if(response.triggerResponse(msg)) lastAction = DateTime.Now;
+                            }
+                        }
                     }
 
                     _G.stopAllThreads();
 
                     Console.WriteLine("Restarting bot ...");
                 } catch(Exception err) {
-                    _G.criticalError("Main thread experienced unexpected fatal error! Details: "+ err.Message +" in "+ err.StackTrace, true);
+                    _G.criticalError("Main thread experienced unexpected fatal error! Details: "+ err.Message +" "+ err.StackTrace, true);
                 }
             }
         }
