@@ -15,7 +15,7 @@ namespace bot {
         public int cooldown;
         public DateTime lastCall;
 
-        public Response(string conditions, string responseType, string parameters, int cooldown) {
+        public Response(string conditions, string responseType, string parameters, int cooldown, bool independent = false) {
             this.conditions = new ConditionHolder(conditions);
             this.condstr = conditions;
             this.responseType = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.responses", StringComparison.Ordinal) && String.Equals(t.Name, responseType, StringComparison.Ordinal)).ToArray()[0];
@@ -24,7 +24,7 @@ namespace bot {
             this.lastCall = new DateTime(0);
         }
 
-        public Response(string conditions, int responseId, string parameters, int cooldown) {
+        public Response(string conditions, int responseId, string parameters, int cooldown, bool independent = false) {
             this.conditions = new ConditionHolder(conditions);
             this.condstr = conditions;
             string typeName = (string)(new MySqlCommand("SELECT `name` FROM `resptypes` WHERE `id`=" + responseId, _G.conn)).ExecuteScalar();

@@ -43,7 +43,7 @@ if($_POST["editId"]) {
         if(isset($_POST["op".$i])) $c .= $_POST["op".$i] .";";
     }
 
-    mysql_query("UPDATE `responses` SET `conditions`='". mysql_real_escape_string($c) ."', `respid`=". $_POST['resptype'] .", `parameters`='". mysql_real_escape_string($_POST['parameters']) ."', `cooldown`=". (($_POST['cdd']==0)?-1:$_POST['cooldown']) ." WHERE `id`=". $_POST['editId']) or die(mysql_error());
+    mysql_query("UPDATE `responses` SET `conditions`='". mysql_real_escape_string($c) ."', `respid`=". $_POST['resptype'] .", `parameters`='". mysql_real_escape_string($_POST['parameters']) ."', `cooldown`=". (($_POST['cdd']==0)?-1:$_POST['cooldown']) .", `independent`=". $_POST['indie'] ." WHERE `id`=". $_POST['editId']) or die(mysql_error());
     mysql_query("UPDATE `updater` SET `responses`=1 WHERE `id`=1");
     header("Location: resp.php");
 }
@@ -56,7 +56,7 @@ if($_POST["resptype"] && !$_POST["editId"]) {
         if(isset($_POST["op".$i])) $c .= $_POST["op".$i] .";";
     }
 
-    mysql_query("INSERT INTO `responses` (`conditions`,`respid`,`parameters`,`cooldown`) VALUES ('". mysql_real_escape_string($c) ."',". $_POST['resptype'] .",'". mysql_real_escape_string($_POST['parameters']) ."',". (($_POST['ccd']==0)?-1:$_POST['cooldown']) .")") or die(mysql_error());
+    mysql_query("INSERT INTO `responses` (`conditions`,`respid`,`parameters`,`cooldown`,`independent`) VALUES ('". mysql_real_escape_string($c) ."',". $_POST['resptype'] .",'". mysql_real_escape_string($_POST['parameters']) ."',". (($_POST['ccd']==0)?-1:$_POST['cooldown']) .",". $_POST['indie'] .")") or die(mysql_error());
     mysql_query("UPDATE `updater` SET `responses`=1 WHERE `id`=1");
     header("Location: resp.php");
 }
@@ -78,9 +78,13 @@ include("header.php");
     function coolChange() {
         if(document.getElementById("cdd").selectedIndex == 0) {
             document.getElementById("cooldown").disabled = true;
+            document.getElementById("indie").disabled = true;
             document.getElementById("cooldown").value = defaultCool;
-        } else
+            document.getElementById("indie").selectedIndex = 0;
+        } else {
             document.getElementById("cooldown").disabled = false;
+            document.getElementById("indie").disabled = false;
+        }
     }
 
     function redrawList() {
@@ -367,6 +371,10 @@ include("header.php");
                             <option value="1">Custom</option>
                         </select>
                         <input type="textbox" name="cooldown" id="cooldown" size="6" value="<?php echo $config->cooldown; ?>" disabled="disabled" /> seconds
+                        <select name="indie" id="indie" disabled="disabled">
+                            <option value="0">dependent on the default cooldown</option>
+                            <option value="1">independent of the default cooldown</option>
+                        </select>
                     </p>
                     <p>
                         <input type="button" name="addResponse" value="Add Response" onclick="evaluateCondition();" />
@@ -504,6 +512,10 @@ include("header.php");
                             <option value="1"<?php if($response->cooldown != -1) { ?> selected="selected"<?php } ?>>Custom</option>
                         </select>
                         <input type="textbox" name="cooldown" id="cooldown" size="6" value="<?php if($response->cooldown == -1) echo $config->cooldown; else echo $response->cooldown; ?>"<?php if($response->cooldown == -1) { ?> disabled="disabled"<?php } ?> /> seconds
+                        <select name="indie" id="indie"<?php if($response->cooldown == -1) { ?> disabled="disabled"<?php } ?>>
+                            <option value="0">dependent on the default cooldown</option>
+                            <option value="1"<?php if($response->independent) { ?> selected="selected"<?php } ?>>independent of the default cooldown</option>
+                        </select>
                     </p>
                     <p>
                         <input type="button" name="editResponse" value="Edit Response" onclick="evaluateCondition();" />

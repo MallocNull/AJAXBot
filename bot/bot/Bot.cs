@@ -16,6 +16,7 @@ namespace bot {
 
         static List<NavigationNode> navigationList = new List<NavigationNode>();
         static List<Response> responseList = new List<Response>();
+        static List<Response> indResponseList = new List<Response>();
 
         public static void loadNavigationList() {
             navigationList = new List<NavigationNode>();
@@ -35,15 +36,20 @@ namespace bot {
         public static void loadResponseList() {
             responseList = new List<Response>();
             var tmp = _G.spawnNewConnection();
-            var r = Query.Reader("SELECT * FROM `responses`", tmp);
+            var r = Query.Reader("SELECT * FROM `responses` WHERE", tmp);
             while(r.Read()) {
-                responseList.Add(new Response(
-                    r.GetString("conditions"),
-                    r.GetInt32("respid"),
-                    r.GetString("parameters"),
-                    r.GetInt32("cooldown")));
-                bool value = responseList.Last().conditions.calculateValue(new Message("guy", "the time is nigh to say nicenight"));
-                value = !value;
+                if(!r.GetBoolean("independent"))
+                    responseList.Add(new Response(
+                        r.GetString("conditions"),
+                        r.GetInt32("respid"),
+                        r.GetString("parameters"),
+                        r.GetInt32("cooldown")));
+                else
+                    indResponseList.Add(new Response(
+                        r.GetString("conditions"),
+                        r.GetInt32("respid"),
+                        r.GetString("parameters"),
+                        r.GetInt32("cooldown")));
             }
             r.Close();
             tmp.Close();
@@ -115,9 +121,16 @@ namespace bot {
                             Chat.sendMessage("response list updated");
                         }
 
+                        foreach(Response response in indResponseList) {
+                            if(response.triggerResponse(msg)) break;
+                        }
+
                         foreach(Response response in responseList) {
                             if((DateTime.Now - lastAction).TotalSeconds >= _G.defaultCooldown) {
-                                if(response.triggerResponse(msg)) lastAction = DateTime.Now;
+                                if(response.triggerResponse(msg)) {
+                                    lastAction = DateTime.Now;
+                                    break;
+                                }
                             }
                         }
                     }
