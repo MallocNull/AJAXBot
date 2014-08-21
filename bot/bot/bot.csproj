@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Autonomous.cs" />
     <Compile Include="Bot.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="Condition.cs" />

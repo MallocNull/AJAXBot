@@ -36,7 +36,7 @@ namespace bot {
         public static void loadResponseList() {
             responseList = new List<Response>();
             var tmp = _G.spawnNewConnection();
-            var r = Query.Reader("SELECT * FROM `responses` WHERE", tmp);
+            var r = Query.Reader("SELECT * FROM `responses`", tmp);
             while(r.Read()) {
                 if(!r.GetBoolean("independent"))
                     responseList.Add(new Response(

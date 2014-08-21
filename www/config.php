@@ -255,7 +255,7 @@ include("header.php"); ?>
                         </td></tr>
                     <tr><td style="text-align: right;">Chat Username:</td><td><input type="text" name="username" value="<?php echo escapeDoubleQuotes($config->username); ?>" /></td></tr>
                     <tr><td style="text-align: right;">Bot Name:</td><td><input type="text" name="name" value="<?php echo escapeDoubleQuotes($config->name); ?>" /></td></tr>
-                    <tr><td style="text-align: right;">Chat Buffer Size:</td><td><input type="text" name="buffsize" value="<?php echo $config->buffersize; ?>" /> messages</td></tr>
+                    <tr><td style="text-align: right;">Chat Buffer Size:</td><td><input type="text" name="buffsize" size="6" value="<?php echo $config->buffersize; ?>" /> messages</td></tr>
                     <tr><td></td><td><input type="submit" name="changeConfig" value="Modify" /></td></tr>
                 </table>
             </form>

@@ -18,7 +18,7 @@
         <?php if($request == "config") { ?>Configuration<?php } else { ?><a href="config.php">Configuration</a><?php } ?> |
         <?php if($request == "resp") { ?>Responses<?php } else { ?><a href="resp.php">Responses</a><?php } ?> |
         <?php if($request == "auto") { ?>Autonomous<?php } else { ?><a href="auto.php">Autonomous</a><?php } ?> |
-        <?php if($request == "admin") { ?>Admin Access<?php } else { ?><a href="admin.php">Admin Access</a><?php } ?> |
+        <?php if($request == "admin") { ?>Admin Accounts<?php } else { ?><a href="admin.php">Admin Accounts</a><?php } ?> |
         <a href="jews.php">Logout</a>
     </h4>
 </center>

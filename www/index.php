@@ -57,5 +57,10 @@ if($_GET["jew"] == "true")
             ?>
         </fieldset>
     </center>
+    <script type="text/javascript">
+        <?php if($_GET["err"]) { ?>
+        alert("<?php echo $_GET["err"]; ?>");
+        <?php } ?>
+    </script>
     <?php include("footer.php"); ?>
 <?php } ?>

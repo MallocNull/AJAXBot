@@ -28,12 +28,12 @@ if($_POST["resptype"] && !$_POST["editId"]) {
 include("header.php");
 ?>
     <script type="text/javascript">
-        /*var defaultCool = <?php echo $config->cooldown; ?>;
+        /*var defaultCool = <?php echo $config->cooldown; ?>;*/
 
         function confirmDeletion(id) {
             var q = confirm("Are you sure you want to delete this response?");
             if(q) window.location.href = "resp.php?del="+id;
-        }*/
+        }
 
         function handleRespChange() {
             document.getElementById("respDesc").innerHTML = document.getElementById(""+document.getElementById("resptype").selectedIndex).innerHTML;
@@ -76,7 +76,38 @@ include("header.php");
         <legend>Create New Autonomous Routine</legend>
         <form method="post" action="" id="auto">
             <p>
-
+                Trigger first routine on
+                <select name="startday">
+                    <option value="-1">program start</option>
+                    <option value="1">Sunday</option>
+                    <option value="2">Monday</option>
+                    <option value="3">Tuesday</option>
+                    <option value="4">Wednesday</option>
+                    <option value="5">Thursday</option>
+                    <option value="6">Friday</option>
+                    <option value="7">Saturday</option>
+                </select>
+                at
+                <select name="starttimehour">
+                    <?php
+                    echo "<option value='-1'></option>";
+                    for($i = 1; $i <= 12; $i++) {
+                        echo "<option value='$i'>". (($i<10)?"0":"") ."$i</option>";
+                    }
+                    ?>
+                </select>
+                :
+                <select name="starttimehour">
+                    <?php
+                    echo "<option value='-1'></option>";
+                    for($i = 0; $i <= 59; $i++) {
+                        echo "<option value='$i'>". (($i<10)?"0":"") ."$i</option>";
+                    }
+                    ?>
+                </select>
+                <select name="timepredicate">
+                    <option value=""></option>
+                </select>
             </p>
             <p>
                 then
@@ -128,88 +159,6 @@ include("header.php");
     ?>
         <legend>Edit Response</legend>
         <form method="post" action="" id="resp">
-            <p>
-                If
-                        <span id="ifholder">
-                            <?php
-                            $conds = mysql_fetch_object(mysql_query("SELECT * FROM `responses` WHERE `id`=". $_GET['id']))->conditions;
-                            $conds = explode(";",$conds);
-                            $conds = array_slice($conds, 0, count($conds)-1);
-                            $on = 1;
-                            foreach($conds as $cond) {
-                                $tk = explode(",",$cond);
-                                if(count($tk) > 3) { ?>
-                                    <span id="if<?php echo $on; ?>" class="block">
-                                        <select name="if<?php echo $on; ?>lpar">
-                                            <?php
-                                            for($i = 0; $i < 6; $i++) {
-                                                echo "<option value=\"$i\"";
-                                                if($i==intval($tk[0]))
-                                                    echo " selected='selected'";
-                                                echo ">";
-                                                for($j = 0; $j < $i; $j++)
-                                                    echo "(";
-                                                echo "</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <select name="if<?php echo $on; ?>not">
-                                            <option value="0"></option>
-                                            <option value="1"<?php if(intval($tk[1])==1) { ?> selected="selected"<?php } ?>>not</option>
-                                        </select>
-                                        <select name="if<?php echo $on; ?>cond">
-                                            <?php
-                                            $q = mysql_query("SELECT * FROM `conditions`");
-                                            while($cond = mysql_fetch_object($q)) {
-                                                echo "<option value='". $cond->id ."'";
-                                                if($cond->id == intval($tk[2]))
-                                                    echo " selected='selected'";
-                                                echo ">". $cond->friendlyname ."</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <input type="text" name="if<?php echo $on; ?>param" value="<?php echo escapeDoubleQuotes($tk[3]); ?>" />
-                                        <select name="if<?php echo $on; ?>rpar">
-                                            <?php
-                                            for($i = 0; $i < 6; $i++) {
-                                                echo "<option value=\"$i\"";
-                                                if($i==intval($tk[4]))
-                                                    echo " selected='selected'";
-                                                echo ">";
-                                                for($j = 0; $j < $i; $j++)
-                                                    echo ")";
-                                                echo "</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <img src='img/arrow_up.png' class='fakelink' style='vertical-align: text-bottom;' onclick='handleRowUp(<?php echo $on; ?>);' />
-                                        <img src='img/arrow_down.png' class='fakelink' style='vertical-align: text-bottom;' onclick='handleRowDown(<?php echo $on; ?>);' />
-                                        <img src='img/delete.png' class='fakelink' style='vertical-align: text-bottom;' onclick='handleRowDelete(<?php echo $on; ?>);' />
-                                    </span>
-                                    <?php for($i = 0; $i < intval($tk[0]); $i++)
-                                        $ret .= "(";
-                                    if($tk[1] == "1")
-                                        $ret .= "not ";
-                                    $ret .= $condtypes[intval($tk[2])] ." ". $tk[3];
-                                    for($i = 0; $i < intval($tk[4]); $i++)
-                                        $ret .= ")";
-                                    $ret .= " ";
-                                    $i++;
-                                } else { ?>
-                                    <span id="op<?php echo $i; ?>">
-                                        <select name='op<?php echo $i; ?>'>
-                                            <option value='0'>and</option>
-                                            <option value='1'<?php if(intval($tk[0]==1)) { ?> selected="selected" <?php } ?>>or</option>
-                                        </select>
-                                    </span>
-                                <?php }
-                            }
-                            ?>
-                        </span>
-                        <span class="block">
-                            <a href="javascript:addCondition();">Add Condition</a>
-                        </span>
-            </p>
             <p>
                 then
                 <select name="resptype" id="resptype" onchange="handleRespChange();">

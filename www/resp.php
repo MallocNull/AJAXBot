@@ -43,7 +43,7 @@ if($_POST["editId"]) {
         if(isset($_POST["op".$i])) $c .= $_POST["op".$i] .";";
     }
 
-    mysql_query("UPDATE `responses` SET `conditions`='". mysql_real_escape_string($c) ."', `respid`=". $_POST['resptype'] .", `parameters`='". mysql_real_escape_string($_POST['parameters']) ."', `cooldown`=". (($_POST['cdd']==0)?-1:$_POST['cooldown']) .", `independent`=". $_POST['indie'] ." WHERE `id`=". $_POST['editId']) or die(mysql_error());
+    mysql_query("UPDATE `responses` SET `conditions`='". mysql_real_escape_string($c) ."', `respid`=". $_POST['resptype'] .", `parameters`='". mysql_real_escape_string($_POST['parameters']) ."', `cooldown`=". (($_POST['cdd']==0)?-1:$_POST['cooldown']) .", `independent`=". (($_POST['indie'])?"1":"0") ." WHERE `id`=". $_POST['editId']) or die(mysql_error());
     mysql_query("UPDATE `updater` SET `responses`=1 WHERE `id`=1");
     header("Location: resp.php");
 }
@@ -56,7 +56,7 @@ if($_POST["resptype"] && !$_POST["editId"]) {
         if(isset($_POST["op".$i])) $c .= $_POST["op".$i] .";";
     }
 
-    mysql_query("INSERT INTO `responses` (`conditions`,`respid`,`parameters`,`cooldown`,`independent`) VALUES ('". mysql_real_escape_string($c) ."',". $_POST['resptype'] .",'". mysql_real_escape_string($_POST['parameters']) ."',". (($_POST['ccd']==0)?-1:$_POST['cooldown']) .",". $_POST['indie'] .")") or die(mysql_error());
+    mysql_query("INSERT INTO `responses` (`conditions`,`respid`,`parameters`,`cooldown`,`independent`) VALUES ('". mysql_real_escape_string($c) ."',". $_POST['resptype'] .",'". mysql_real_escape_string($_POST['parameters']) ."',". (($_POST['ccd']==0)?-1:$_POST['cooldown']) .",". (($_POST['indie'])?"1":"0") .")") or die(mysql_error());
     mysql_query("UPDATE `updater` SET `responses`=1 WHERE `id`=1");
     header("Location: resp.php");
 }
