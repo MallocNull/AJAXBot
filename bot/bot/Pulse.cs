@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace bot {
     class Pulse {
+        public const int pulseTime = 60;
+
         public static void updateHeartbeat() {
             string beat = _G.getLocalTimeFromUTC().ToString();
             Query.Quiet("UPDATE `updater` SET `heartbeat`='" + beat + "' WHERE `id`=1", _G.conn);
@@ -34,7 +36,7 @@ namespace bot {
             DateTime t = new DateTime(0);
 
             while(true) {
-                if((DateTime.Now - t).TotalSeconds > 30) {
+                if((DateTime.Now - t).TotalSeconds > pulseTime) {
                     updateHeartbeat();
                     checkUpdates();
                     t = DateTime.Now;

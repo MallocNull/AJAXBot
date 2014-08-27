@@ -96,7 +96,12 @@ namespace bot {
                     } catch(Exception err) { }
                 }
                 Console.WriteLine(msg);
-                return new Message(msg.Substring(0, msg.IndexOf(':')), msg.Substring(msg.IndexOf(':') + 2));
+
+                try {
+                    return new Message(msg.Substring(0, msg.IndexOf(':')), msg.Substring(msg.IndexOf(':') + 2));
+                } catch(Exception err) {
+                    return new Message("","");
+                }
             } else return null;
         }
     }

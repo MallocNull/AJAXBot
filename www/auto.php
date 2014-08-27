@@ -106,11 +106,13 @@ include("header.php");
                     ?>
                 </select>
                 <select name="timepredicate">
-                    <option value=""></option>
+                    <option value="-1"></option>
+                    <option value="0">AM</option>
+                    <option value="1">PM</option>
                 </select>
             </p>
             <p>
-                then
+                On trigger,
                 <select name="resptype" id="resptype" onchange="handleRespChange();">
                     <?php
                     $q = mysql_query("SELECT * FROM `resptypes`");

@@ -19,11 +19,11 @@ namespace bot {
         static List<Response> indResponseList = new List<Response>();
 
         public static void loadNavigationList() {
-            navigationList = new List<NavigationNode>();
+            List<NavigationNode> tmpList = new List<NavigationNode>();
             var tmp = _G.spawnNewConnection();
             var r = Query.Reader("SELECT * FROM `navigate`", tmp);
             while(r.Read()) {
-                navigationList.Add(new NavigationNode(
+                tmpList.Add(new NavigationNode(
                     r.GetInt32("findtype"),
                     r.GetString("locator"),
                     r.GetInt32("action"),
@@ -31,21 +31,23 @@ namespace bot {
             }
             r.Close();
             tmp.Close();
+            navigationList = tmpList;
         }
 
         public static void loadResponseList() {
-            responseList = new List<Response>();
+            List<Response> tmpListDep = new List<Response>();
+            List<Response> tmpListInd = new List<Response>();
             var tmp = _G.spawnNewConnection();
             var r = Query.Reader("SELECT * FROM `responses`", tmp);
             while(r.Read()) {
                 if(!r.GetBoolean("independent"))
-                    responseList.Add(new Response(
+                    tmpListDep.Add(new Response(
                         r.GetString("conditions"),
                         r.GetInt32("respid"),
                         r.GetString("parameters"),
                         r.GetInt32("cooldown")));
                 else
-                    indResponseList.Add(new Response(
+                    tmpListInd.Add(new Response(
                         r.GetString("conditions"),
                         r.GetInt32("respid"),
                         r.GetString("parameters"),
@@ -53,6 +55,8 @@ namespace bot {
             }
             r.Close();
             tmp.Close();
+            responseList = tmpListDep;
+            indResponseList = tmpListInd;
         }
 
         static void Main(string[] args) {
@@ -112,10 +116,10 @@ namespace bot {
                     while(Chat.isChatting(_G.driver)) {
                         Message msg = Chat.waitForNewMessage(_G.driver);
                         if(msg == null) break;
-                        if(msg.msg == "!dump") {
+                        /*if(msg.msg == "!dump") {
                             foreach(Response r in responseList)
                                 Chat.sendMessage("IF "+ r.condstr +" THEN "+ r.responseType.Name);
-                        }
+                        }*/
                         if(msg.msg == "!update") {
                             Bot.loadResponseList();
                             Chat.sendMessage("response list updated");
