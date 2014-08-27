@@ -92,6 +92,6 @@ CREATE TABLE IF NOT EXISTS `updater` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO `admin` () VALUES ()
-INSERT INTO `config` () VALUES ()
-INSERT INTO `updater` () VALUES ()
+INSERT INTO `admin` () VALUES ();
+INSERT INTO `config` () VALUES ();
+INSERT INTO `updater` () VALUES ();
