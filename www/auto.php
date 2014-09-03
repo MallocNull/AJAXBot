@@ -13,15 +13,11 @@ if($_POST["editId"]) {
 }
 
 if($_POST["resptype"] && !$_POST["editId"]) {
-    $c = "";
-    for($i=1;;$i++) {
-        if(!isset($_POST["if". $i ."param"])) break;
-        $c .= $_POST['if'.$i.'lpar'].",".$_POST['if'.$i.'not'].",".$_POST['if'.$i.'cond'].",".$_POST['if'.$i.'param'].",".$_POST['if'.$i.'rpar'].";";
-        if(isset($_POST["op".$i])) $c .= $_POST["op".$i] .";";
-    }
-
-    mysql_query("INSERT INTO `responses` (`conditions`,`respid`,`parameters`,`cooldown`) VALUES ('". mysql_real_escape_string($c) ."',". $_POST['resptype'] .",'". mysql_real_escape_string($_POST['parameters']) ."',". (($_POST['ccd']==0)?-1:$_POST['cooldown']) .")") or die(mysql_error());
-    mysql_query("UPDATE `updater` SET `responses`=1 WHERE `id`=1");
+    if($_POST["autolink"] == -1)
+        mysql_query("INSERT INTO `autonomous` (`conditions`,`respid`,`parameters`,`cooldown`) VALUES ('". mysql_real_escape_string($c) ."',". $_POST['resptype'] .",'". mysql_real_escape_string($_POST['parameters']) ."',". (($_POST['ccd']==0)?-1:$_POST['cooldown']) .")") or die(mysql_error());
+    else
+        // do query
+    mysql_query("UPDATE `updater` SET `autonomous`=1 WHERE `id`=1");
     header("Location: auto.php");
 }
 
@@ -32,11 +28,55 @@ include("header.php");
 
         function confirmDeletion(id) {
             var q = confirm("Are you sure you want to delete this response?");
-            if(q) window.location.href = "resp.php?del="+id;
+            if(q) window.location.href = "auto.php?del="+id;
         }
 
         function handleRespChange() {
             document.getElementById("respDesc").innerHTML = document.getElementById(""+document.getElementById("resptype").selectedIndex).innerHTML;
+        }
+
+        function doTimeTest(fieldname, fieldtext, canbezero) {
+            if(!isNaN(parseInt(fieldtext.trim())) && isFinite(parseInt(fieldtext.trim()))) {
+                if(parseInt(fieldtext) > ((canbezero)?-1:0)) {
+                    return true;
+                } else {
+                    alert(fieldname +" must be positive and nonzero integer!");
+                    return false;
+                }
+            } else {
+                alert(fieldname +" must be a finite integer!");
+                return false;
+            }
+        }
+
+        function evaluateCondition() {
+            if(document.getElementById("arname").value.trim() != "") {
+                if(doTimeTest("Periodicity",document.getElementById("period").value)) {
+                    if(doTimeTest("Randomness",document.getElementById("randomness").value)) {
+                        if(document.getElementById("autolink").selectedIndex != 0) {
+                            if(doTimeTest("Link timeout",document.getElementById("timeout").value)) {
+                                if(doTimeTest("Link randomness",document.getElementById("torandom").value)) {
+                                    document.getElementById("auto").submit();
+                                }
+                            }
+                        } else {
+                            document.getElementById("auto").submit();
+                        }
+                    }
+                }
+            } else {
+                alert("Friendly name cannot be blank!");
+            }
+        }
+
+        function handleAutolinkChange() {
+            if(document.getElementById("autolink").selectedIndex != 0) {
+                for(i = 1; i <= 3; i++)
+                    document.getElementById("linktable").getElementsByTagName("tr")[i].style.display = "table-row";
+            } else {
+                for(i = 1; i <= 3; i++)
+                    document.getElementById("linktable").getElementsByTagName("tr")[i].style.display = "none";
+            }
         }
 
         /*function coolChange() {
@@ -76,6 +116,9 @@ include("header.php");
         <legend>Create New Autonomous Routine</legend>
         <form method="post" action="" id="auto">
             <p>
+                Friendly name: <input type="text" name="arname" id="arname" /> (for future reference)
+            </p>
+            <p>
                 Trigger first routine on
                 <select name="startday">
                     <option value="-1">program start</option>
@@ -91,7 +134,7 @@ include("header.php");
                 <select name="starttimehour">
                     <?php
                     echo "<option value='-1'></option>";
-                    for($i = 1; $i <= 12; $i++) {
+                    for($i = 1; $i <= 24; $i++) {
                         echo "<option value='$i'>". (($i<10)?"0":"") ."$i</option>";
                     }
                     ?>
@@ -105,11 +148,14 @@ include("header.php");
                     }
                     ?>
                 </select>
-                <select name="timepredicate">
-                    <option value="-1"></option>
-                    <option value="0">AM</option>
-                    <option value="1">PM</option>
-                </select>
+            </p>
+            <p>
+                After first trigger,
+                <table border="0">
+                <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td>continue triggering every</td><td></td><td><input type="text" name="period" id="period" /> seconds</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td>with a randomness of<td>&plusmn;</td></td><td><input type="text" name="randomness" id="randomness" /> seconds.</td></tr>
+                </table>
+
             </p>
             <p>
                 On trigger,
@@ -134,26 +180,64 @@ include("header.php");
                 ?>
             </p>
             <p>
-                        <span class="block" id="respDesc">
-                        <?php echo $descarr[0]; ?>
-                        </span>
-                        <span class="block">Parameters:
-                        <center>
-                            <textarea name="parameters" rows="8" style="width:95%;"></textarea>
-                        </center></span>
+                <span class="block" id="respDesc">
+                <?php echo $descarr[0]; ?>
+                </span>
+                <span class="block">Parameters:
+                <center>
+                    <textarea name="parameters" rows="8" style="width:95%;"></textarea>
+                </center></span>
             </p>
             <p>
-                Cooldown:
-                <select name="cdd" id="cdd" onchange="coolChange();">
-                    <option value="0">Default</option>
-                    <option value="1">Custom</option>
-                </select>
-                <input type="textbox" name="cooldown" id="cooldown" size="6" value="<?php echo $config->cooldown; ?>" disabled="disabled" /> seconds
+                After triggering,
+                <table border="0" id="linktable">
+                <tr>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>Force routine to trigger</td>
+                    <td></td>
+                    <td><select name="autolink" id="autolink" onchange="handleAutolinkChange();">
+                            <option value="-1">&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                            <?php
+                            $q = mysql_query("SELECT * FROM `autonomous`");
+                            while($auto = mysql_fetch_object($q)) {
+                                echo "<option value='". $auto->id ."'>". $auto->name ."</option>";
+                            }
+                            ?>
+                    </select></td>
+                </tr>
+                <tr style="display: none;">
+                    <td></td>
+                    <td>after</td>
+                    <td></td>
+                    <td>
+                        <input type="text" name="timeout" id="timeout" /> seconds
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td></td>
+                    <td>with a randomness of</td>
+                    <td>&plusmn;</td>
+                    <td>
+                        <input type="text" name="torandom" id="torandom" /> seconds.
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td></td>
+                    <td>While waiting to trigger, </td>
+                    <td></td>
+                    <td>
+                        <select name="respond" id="respond">
+                            <option value="0">do not respond to messages</option>
+                            <option value="1">do respond to messages</option>
+                        </select>.
+                    </td>
+                </tr>
+                </table>
             </p>
             <p>
-                <input type="button" name="addResponse" value="Add Response" onclick="evaluateCondition();" />
+                <input type="button" name="addResponse" value="Add Autonomous Routine" onclick="evaluateCondition();" />
                 &nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="button" value="Cancel" onclick="window.location.href = 'resp.php';" />
+                <input type="button" value="Cancel" onclick="window.location.href = 'auto.php';" />
             </p>
         </form>
     <?php } else if($_GET["do"]=="edit") {

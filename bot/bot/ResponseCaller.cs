@@ -11,7 +11,7 @@ namespace bot {
 
         static void loadResponseTypes() {
             if(responseTypes == null)
-                responseTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.responses", StringComparison.Ordinal)).ToArray();
+                responseTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.responses", StringComparison.Ordinal) && !t.FullName.Contains('+')).ToArray();
         }
 
         public static void callResponse(String responseName, string parameters, Message msg) {

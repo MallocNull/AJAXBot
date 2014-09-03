@@ -87,6 +87,7 @@
     <Compile Include="Pulse.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="responses\jumble.cs" />
+    <Compile Include="responses\poker.cs" />
     <Compile Include="responses\replace.cs" />
     <Compile Include="Sanitizer.cs" />
     <Compile Include="_G.cs" />

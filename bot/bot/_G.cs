@@ -9,6 +9,7 @@ using OpenQA.Selenium.Internal;
 using OpenQA.Selenium.Support.UI;
 using MySql.Data.MySqlClient;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace bot {
     static class _G {

@@ -60,13 +60,24 @@ namespace bot {
         }
 
         static void Main(string[] args) {
+            Console.Write("Loading database info ... ");
             _G.loadDatabaseInfo();
+            Console.WriteLine("OK");
+
+            Console.Write("Spawning database connections ... ");
             _G.conn = _G.spawnNewConnection();
             _G.errconn = _G.spawnNewConnection();
+            Console.WriteLine("OK");
 
+            Console.Write("Loading bot configuration ... ");
             _G.loadConfig();
-            loadResponseList();
+            Console.WriteLine("OK");
 
+            Console.Write("Loading response list ... ");
+            loadResponseList();
+            Console.WriteLine("OK");
+
+            Console.Write("Updating response types on database ... ");
             tmp = "DELETE FROM resptypes WHERE ";
             foreach(Type t in ResponseCaller.getResponseTypes()) {
                 string[] typeInfo = (string[])t.GetMethod("getInfo").Invoke(null, null);
@@ -78,7 +89,9 @@ namespace bot {
             }
             tmp = tmp.Substring(0, tmp.Length - 5);
             Query.Quiet(tmp, _G.conn);
+            Console.WriteLine("OK");
 
+            Console.Write("Updating conditions on database ... ");
             tmp = "DELETE FROM conditions WHERE ";
             foreach(Type t in ConditionChecker.getConditions()) {
                 string[] typeInfo = (string[])t.GetMethod("getInfo").Invoke(null, null);
@@ -90,11 +103,15 @@ namespace bot {
             }
             tmp = tmp.Substring(0, tmp.Length - 5);
             Query.Quiet(tmp, _G.conn);
+            Console.WriteLine("OK");
 
+            Console.Write("Spawning web driver ... ");
             _G.driver = new FirefoxDriver();
+            Console.WriteLine("OK");
 
             while(true) {
                 try {
+                    Console.Write("Navigating to chat ... ");
                     foreach(NavigationNode node in navigationList)
                         node.performNavigation(_G.driver);
                     try {
@@ -102,6 +119,7 @@ namespace bot {
                     } catch(Exception e) {
                         _G.criticalError("Navigation to chat failed! Fix instructions.", true);
                     }
+                    Console.WriteLine("OK");
 
                     _G.startThread(Pulse.pulseThread);
 

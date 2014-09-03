@@ -11,7 +11,7 @@ namespace bot {
 
         static void loadConditionTypes() {
             if(conditionTypes == null)
-                conditionTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.conditions", StringComparison.Ordinal)).ToArray();
+                conditionTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => String.Equals(t.Namespace, "bot.conditions", StringComparison.Ordinal) && !t.FullName.Contains('+')).ToArray();
         }
 
         public static bool checkCondition(String conditionName, Message msg, string parameter) {
