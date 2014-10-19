@@ -17,6 +17,7 @@ namespace bot {
         static int currentMessage;
 
         public static void reloadContext(FirefoxDriver d) {
+			Console.Writeline("reloading context");
 			while(true) {
 				try {
 					List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
@@ -28,6 +29,7 @@ namespace bot {
 					break;
 				} catch(Exception shoehorn) {}
 			}
+			Console.Writeline("reloading context complete");
             if(d.FindElement(By.Id("audioButton")).GetAttribute("class").ToLower() == "button")
                 d.FindElement(By.Id("audioButton")).Click();
         }
