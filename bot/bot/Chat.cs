@@ -17,7 +17,7 @@ namespace bot {
         static int currentMessage;
 
         public static void reloadContext(FirefoxDriver d) {
-			Console.Writeline("reloading context");
+			Console.WriteLine("reloading context");
 			while(true) {
 				try {
 					List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
@@ -26,10 +26,13 @@ namespace bot {
 						if(Int32.Parse(we.GetAttribute("id").Substring(11)) > currentMessage)
 							currentMessage = Int32.Parse(we.GetAttribute("id").Substring(11));
 					}
+					Console.WriteLine("got here");
 					break;
-				} catch(Exception shoehorn) {}
+				} catch(Exception shoehorn) {
+					Console.WriteLine(shoehorn.Message);
+				}
 			}
-			Console.Writeline("reloading context complete");
+			Console.WriteLine("reloading context complete");
             if(d.FindElement(By.Id("audioButton")).GetAttribute("class").ToLower() == "button")
                 d.FindElement(By.Id("audioButton")).Click();
         }
