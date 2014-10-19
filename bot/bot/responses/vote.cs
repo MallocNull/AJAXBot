@@ -41,6 +41,7 @@ namespace bot.responses {
                     if(voters.Count >= people / 3) {
                         Chat.sendMessage(String.Format(pars[1], param));
                         Chat.sendMessage(String.Format(pars[2], param));
+						voteCalled = false;
                     } else
                         Chat.sendMessage(voters.Count + "/" + people / 3 + " votes recorded.");
                 } else {
