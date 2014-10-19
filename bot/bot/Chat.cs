@@ -20,8 +20,8 @@ namespace bot {
             List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
             messageDivSize = chatdata.Count;
             foreach(IWebElement we in chatdata) {
-                if(Int32.Parse(we.GetAttribute("id").Substring(11)) > currentMessage)
-                    currentMessage = Int32.Parse(we.GetAttribute("id").Substring(11));
+                if(Int32.Parse(we.GetAttribute("id").Substring(we.GetAttribute("id").LastIndexOf('_') + 1)) > currentMessage)
+                    currentMessage = Int32.Parse(we.GetAttribute("id").Substring(we.GetAttribute("id").LastIndexOf('_') + 1));
             }
             if(d.FindElement(By.Id("audioButton")).GetAttribute("class").ToLower() == "button")
                 d.FindElement(By.Id("audioButton")).Click();
@@ -74,7 +74,7 @@ namespace bot {
                     List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
                     bool found = false;
                     foreach(IWebElement we in chatdata) {
-                        int nodeID = Int32.Parse(we.GetAttribute("id").Substring(11));
+                        int nodeID = Int32.Parse(we.GetAttribute("id").Substring(we.GetAttribute("id").LastIndexOf('_') + 1));
                         if(nodeID > currentMessage) {
                             currentMessage = nodeID;
                             found = true;
