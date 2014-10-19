@@ -23,8 +23,8 @@ namespace bot {
 					List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
 					messageDivSize = chatdata.Count;
 					foreach(IWebElement we in chatdata) {
-						if(Int32.Parse(we.GetAttribute("id").Substring(11)) > currentMessage)
-							currentMessage = Int32.Parse(we.GetAttribute("id").Substring(11));
+						if(Int32.Parse(we.GetAttribute("id").Substring(we.GetAttribute("id").LastIndexOf('_') + 1)) > currentMessage)
+							currentMessage = Int32.Parse(we.GetAttribute("id").Substring(we.GetAttribute("id").LastIndexOf('_') + 1));
 					}
 					Console.WriteLine("got here");
 					break;
