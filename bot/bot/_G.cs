@@ -85,7 +85,7 @@ namespace bot {
                 tmp = new MySqlConnection("SERVER=" + dbinfo[0] + ";DATABASE=" + dbinfo[3] + ";UID=" + dbinfo[1] + ";PASSWORD=" + dbinfo[2] + ";");
                 tmp.Open();
             } catch(Exception e) {
-                criticalError("Could not open database connection!");
+                criticalError("Could not open database connection! "+ e.Message);
                 return null;
             }
             return tmp;

@@ -17,12 +17,17 @@ namespace bot {
         static int currentMessage;
 
         public static void reloadContext(FirefoxDriver d) {
-            List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
-            messageDivSize = chatdata.Count;
-            foreach(IWebElement we in chatdata) {
-                if(Int32.Parse(we.GetAttribute("id").Substring(11)) > currentMessage)
-                    currentMessage = Int32.Parse(we.GetAttribute("id").Substring(11));
-            }
+			while(true) {
+				try {
+					List<IWebElement> chatdata = d.FindElement(By.Id("chatList")).FindElements(By.TagName("div")).ToList();
+					messageDivSize = chatdata.Count;
+					foreach(IWebElement we in chatdata) {
+						if(Int32.Parse(we.GetAttribute("id").Substring(11)) > currentMessage)
+							currentMessage = Int32.Parse(we.GetAttribute("id").Substring(11));
+					}
+					break;
+				} catch(Exception shoehorn) {}
+			}
             if(d.FindElement(By.Id("audioButton")).GetAttribute("class").ToLower() == "button")
                 d.FindElement(By.Id("audioButton")).Click();
         }
