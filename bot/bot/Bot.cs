@@ -80,12 +80,16 @@ namespace bot {
             Console.Write("Updating response types on database ... ");
             tmp = "DELETE FROM resptypes WHERE ";
             foreach(Type t in ResponseCaller.getResponseTypes()) {
-                string[] typeInfo = (string[])t.GetMethod("getInfo").Invoke(null, null);
-                tmp += "name<>'" + typeInfo[0] + "' AND ";
-                if((Int64)Query.Scalar("SELECT COUNT(*) FROM `resptypes` WHERE `name`='" + typeInfo[0] + "'", _G.conn) > 0)
-                    Query.Quiet("UPDATE `resptypes` SET friendlyname='" + Sanitizer.Sanitize(typeInfo[1]) + "',description='" + Sanitizer.Sanitize(typeInfo[2]) + "' WHERE name='" + typeInfo[0] + "'", _G.conn);
-                else
-                    Query.Quiet("INSERT INTO `resptypes` (name,friendlyname,description) VALUES ('" + typeInfo[0] + "','" + Sanitizer.Sanitize(typeInfo[1]) + "','" + Sanitizer.Sanitize(typeInfo[2]) + "')", _G.conn);
+                try {
+                    string[] typeInfo = (string[])t.GetMethod("getInfo").Invoke(null, null);
+                    tmp += "name<>'" + typeInfo[0] + "' AND ";
+                    if((Int64)Query.Scalar("SELECT COUNT(*) FROM `resptypes` WHERE `name`='" + typeInfo[0] + "'", _G.conn) > 0)
+                        Query.Quiet("UPDATE `resptypes` SET friendlyname='" + Sanitizer.Sanitize(typeInfo[1]) + "',description='" + Sanitizer.Sanitize(typeInfo[2]) + "' WHERE name='" + typeInfo[0] + "'", _G.conn);
+                    else
+                        Query.Quiet("INSERT INTO `resptypes` (name,friendlyname,description) VALUES ('" + typeInfo[0] + "','" + Sanitizer.Sanitize(typeInfo[1]) + "','" + Sanitizer.Sanitize(typeInfo[2]) + "')", _G.conn);
+                } catch(Exception e) {
+                    _G.criticalError("Response type found in database does not match compiled response types! Update program.");
+                }
             }
             tmp = tmp.Substring(0, tmp.Length - 5);
             Query.Quiet(tmp, _G.conn);
@@ -94,12 +98,16 @@ namespace bot {
             Console.Write("Updating conditions on database ... ");
             tmp = "DELETE FROM conditions WHERE ";
             foreach(Type t in ConditionChecker.getConditions()) {
-                string[] typeInfo = (string[])t.GetMethod("getInfo").Invoke(null, null);
-                tmp += "name<>'" + typeInfo[0] + "' AND ";
-                if((Int64)Query.Scalar("SELECT COUNT(*) FROM `conditions` WHERE `name`='" + typeInfo[0] + "'", _G.conn) > 0)
-                    Query.Quiet("UPDATE `conditions` SET friendlyname='" + Sanitizer.Sanitize(typeInfo[1]) + "' WHERE name='" + typeInfo[0] + "'", _G.conn);
-                else
-                    Query.Quiet("INSERT INTO `conditions` (name,friendlyname) VALUES ('" + typeInfo[0] + "','" + Sanitizer.Sanitize(typeInfo[1]) + "')", _G.conn);
+                try {
+                    string[] typeInfo = (string[])t.GetMethod("getInfo").Invoke(null, null);
+                    tmp += "name<>'" + typeInfo[0] + "' AND ";
+                    if((Int64)Query.Scalar("SELECT COUNT(*) FROM `conditions` WHERE `name`='" + typeInfo[0] + "'", _G.conn) > 0)
+                        Query.Quiet("UPDATE `conditions` SET friendlyname='" + Sanitizer.Sanitize(typeInfo[1]) + "' WHERE name='" + typeInfo[0] + "'", _G.conn);
+                    else
+                        Query.Quiet("INSERT INTO `conditions` (name,friendlyname) VALUES ('" + typeInfo[0] + "','" + Sanitizer.Sanitize(typeInfo[1]) + "')", _G.conn);
+                } catch(Exception e) {
+                    _G.criticalError("Condition found in database does not match compiled conditions! Update program.");
+                }
             }
             tmp = tmp.Substring(0, tmp.Length - 5);
             Query.Quiet(tmp, _G.conn);
@@ -134,10 +142,10 @@ namespace bot {
                     while(Chat.isChatting(_G.driver)) {
                         Message msg = Chat.waitForNewMessage(_G.driver);
                         if(msg == null) break;
-                        /*if(msg.msg == "!dump") {
+                        if(msg.msg == "!dump") {
                             foreach(Response r in responseList)
                                 Chat.sendMessage("IF "+ r.condstr +" THEN "+ r.responseType.Name);
-                        }*/
+                        }
                         if(msg.msg == "!update") {
                             Bot.loadResponseList();
                             Chat.sendMessage("response list updated");

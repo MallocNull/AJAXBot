@@ -89,6 +89,7 @@
     <Compile Include="responses\jumble.cs" />
     <Compile Include="responses\poker.cs" />
     <Compile Include="responses\replace.cs" />
+    <Compile Include="responses\vote.cs" />
     <Compile Include="Sanitizer.cs" />
     <Compile Include="_G.cs" />
     <Compile Include="Message.cs" />
@@ -101,8 +102,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="dbinfo.txt" />
-    <Content Include="dbinfo_generic.txt" />
+    <Content Include="dbinfo.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dbinfo_generic.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
