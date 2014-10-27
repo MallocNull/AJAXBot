@@ -7,7 +7,7 @@ if($_GET['del']) {
 
 if($_POST["editId"]) {
     // TODO update this
-    mysql_query("UPDATE `responses` SET `conditions`='". mysql_real_escape_string($c) ."', `respid`=". $_POST['resptype'] .", `parameters`='". mysql_real_escape_string($_POST['parameters']) ."', `cooldown`=". (($_POST['cdd']==0)?-1:$_POST['cooldown']) ." WHERE `id`=". $_POST['editId']) or die(mysql_error());
+    mysql_query("UPDATE `autonomous` SET `conditions`='". mysql_real_escape_string($c) ."', `respid`=". $_POST['resptype'] .", `parameters`='". mysql_real_escape_string($_POST['parameters']) ."', `cooldown`=". (($_POST['cdd']==0)?-1:$_POST['cooldown']) ." WHERE `id`=". $_POST['editId']) or die(mysql_error());
     mysql_query("UPDATE `updater` SET `autonomous`=1 WHERE `id`=1");
     header("Location: auto.php");
 }
