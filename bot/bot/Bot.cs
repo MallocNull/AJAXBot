@@ -17,6 +17,7 @@ namespace bot {
         static List<NavigationNode> navigationList = new List<NavigationNode>();
         static List<Response> responseList = new List<Response>();
         static List<Response> indResponseList = new List<Response>();
+        static List<Autonomous> autoList = new List<Autonomous>();
 
         public static void loadNavigationList() {
             List<NavigationNode> tmpList = new List<NavigationNode>();
@@ -57,6 +58,10 @@ namespace bot {
             tmp.Close();
             responseList = tmpListDep;
             indResponseList = tmpListInd;
+        }
+
+        public static void loadAutonomousList() {
+
         }
 
         static void Main(string[] args) {
