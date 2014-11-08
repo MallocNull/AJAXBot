@@ -19,6 +19,20 @@ namespace bot {
         static List<Response> indResponseList = new List<Response>();
         static List<Autonomous> autoList = new List<Autonomous>();
 
+        public static bool ignoreResponses = false;
+
+        public static void AutonomousThread() {
+            while(true) {
+                try {
+                    foreach(Autonomous auto in autoList) {
+                        auto.triggerRoutine();
+                    }
+                } catch(Exception e) {
+                    // catch this at some point
+                }
+            }
+        }
+
         public static void loadNavigationList() {
             List<NavigationNode> tmpList = new List<NavigationNode>();
             var tmp = _G.spawnNewConnection();
@@ -61,7 +75,39 @@ namespace bot {
         }
 
         public static void loadAutonomousList() {
+            List<Autonomous> tmpList = new List<Autonomous>();
+            var tmp = _G.spawnNewConnection();
+            var r = Query.Reader("SELECT * FROM `autonomous`", tmp);
+            while(r.Read()) {
+                tmpList.Add(new Autonomous(
+                    r.GetInt32("id"),
+                    r.GetString("name"),
+                    r.GetInt32("startday"),
+                    new int[] { Int32.Parse(r.GetString("starttime").Split(',')[0]), Int32.Parse(r.GetString("starttime").Split(',')[1]) },
+                    r.GetInt32("periodicity"),
+                    r.GetInt32("randomness"),
+                    r.GetInt32("respid"),
+                    r.GetString("parameters"),
+                    r.GetInt32("autolink"),
+                    !r.GetBoolean("linkrespond"),
+                    r.GetInt32("timeout"),
+                    r.GetInt32("torandomness")));
+            }
+            r.Close();
+            tmp.Close();
+            autoList = tmpList;
 
+            // TODO improve this later
+            foreach(Autonomous auto in autoList) {
+                if(auto.autolinkid != -1) {
+                    foreach(Autonomous autoauto in autoList) {
+                        if(auto.autolinkid == autoauto.id) {
+                            auto.autolink = autoauto;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         static void Main(string[] args) {
@@ -80,6 +126,10 @@ namespace bot {
 
             Console.Write("Loading response list ... ");
             loadResponseList();
+            Console.WriteLine("OK");
+
+            Console.Write("Loading autonomous routine list ...");
+            loadAutonomousList();
             Console.WriteLine("OK");
 
             Console.Write("Updating response types on database ... ");
@@ -136,9 +186,9 @@ namespace bot {
 
                     _G.startThread(Pulse.pulseThread);
 
-                    // TODO add autonomous thread start
-
                     Chat.reloadContext(_G.driver);
+
+                    (new Thread(new ThreadStart(Bot.AutonomousThread))).Start();
 
                     Console.WriteLine(_G.propername + " has started successfully.");
 
@@ -146,25 +196,29 @@ namespace bot {
 
                     while(Chat.isChatting(_G.driver)) {
                         Message msg = Chat.waitForNewMessage(_G.driver);
-                        if(msg == null) break;
-                        if(msg.msg == "!dump") {
-                            foreach(Response r in responseList)
-                                Chat.sendMessage("IF "+ r.condstr +" THEN "+ r.responseType.Name);
-                        }
-                        if(msg.msg == "!update") {
-                            Bot.loadResponseList();
-                            Chat.sendMessage("response list updated");
-                        }
+                        if(!ignoreResponses) {
+                            if(msg == null) break;
+                            if(msg.msg == "!dump") {
+                                foreach(Response r in responseList)
+                                    Chat.sendMessage("IF " + r.condstr + " THEN " + r.responseType.Name);
+                            }
+                            if(msg.msg == "!update") {
+                                Bot.loadResponseList();
+                                Chat.sendMessage("response list updated");
+                                Bot.loadAutonomousList();
+                                Chat.sendMessage("autonomous list updated");
+                            }
 
-                        foreach(Response response in indResponseList) {
-                            if(response.triggerResponse(msg)) break;
-                        }
+                            foreach(Response response in indResponseList) {
+                                if(response.triggerResponse(msg)) break;
+                            }
 
-                        foreach(Response response in responseList) {
-                            if((DateTime.Now - lastAction).TotalSeconds >= _G.defaultCooldown) {
-                                if(response.triggerResponse(msg)) {
-                                    lastAction = DateTime.Now;
-                                    break;
+                            foreach(Response response in responseList) {
+                                if((DateTime.Now - lastAction).TotalSeconds >= _G.defaultCooldown) {
+                                    if(response.triggerResponse(msg)) {
+                                        lastAction = DateTime.Now;
+                                        break;
+                                    }
                                 }
                             }
                         }

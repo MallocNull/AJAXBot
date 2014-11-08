@@ -17,6 +17,8 @@ namespace bot {
         static int currentMessage;
 
         public static void reloadContext(FirefoxDriver d) {
+            while(!ProtectionContext.Protect()) ;
+
 			Console.WriteLine("reloading context");
 			while(true) {
 				try {
@@ -35,19 +37,26 @@ namespace bot {
 			Console.WriteLine("reloading context complete");
             if(d.FindElement(By.Id("audioButton")).GetAttribute("class").ToLower() == "button")
                 d.FindElement(By.Id("audioButton")).Click();
+
+            ProtectionContext.Free();
         }
 
-        public static void sendMessage(string text) {
-            sendMessage(text, _G.driver);
+        public static void sendMessage(string text, bool protect = true) {
+            sendMessage(text, _G.driver, protect);
         }
 
-        public static void sendMessage(string text, FirefoxDriver d) {
-            // TODO protection context corrections
+        public static void sendMessage(string text, FirefoxDriver d, bool protect = true) {
+            if(protect)
+                while(!ProtectionContext.Protect()) ;
+
             if(isChatting(d)) {
                 d.FindElement(By.Id("inputField")).SendKeys(text);
                 d.FindElement(By.Id("submitButton")).Click();
                 try { Thread.Sleep(500); } catch(Exception e) { }
             }
+
+            if(protect)
+                ProtectionContext.Free();
         }
 
         public static bool isChatting(FirefoxDriver d) {

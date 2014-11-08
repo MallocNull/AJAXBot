@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace bot.conditions {
@@ -11,7 +12,8 @@ namespace bot.conditions {
         }
 
         static public bool performCheck(Message msg, string parameter) {
-            return false; // implement
+            Regex matcher = new Regex("\\b"+ parameter.ToLower() +"\\b");
+            return matcher.IsMatch(msg.msg.ToLower());
         }
     }
 }
