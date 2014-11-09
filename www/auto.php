@@ -1,5 +1,7 @@
 <?php include("conn.php");
 
+// ALTER TABLE `autonomous` CHANGE `starttime` `starttime` VARCHAR( 6 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT '-1,-1'
+
 if($_GET['del']) {
     mysql_query("DELETE FROM `autonomous` WHERE `id`=".$_GET['del']);
     header("Location: auto.php");
@@ -291,6 +293,7 @@ include("header.php");
                     <?php
                     echo "<option value='-1'". ($explodeTime[1] == "-1"?" selected='selected'":"") ."></option>";
                     for($i = 0; $i <= 59; $i++) {
+                        echo "<!-- iteration $i looking for ". $explodeTime[1] ." from string ". $autono->starttime ." -->";
                         echo "<option value='$i'". ($explodeTime[1] == "".$i?" selected='selected'":"") .">". (($i<10)?"0":"") ."$i</option>";
                     }
                     ?>

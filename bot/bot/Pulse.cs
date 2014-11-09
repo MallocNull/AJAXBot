@@ -23,7 +23,7 @@ namespace bot {
                 Query.Quiet("UPDATE `updater` SET `responses`=0 WHERE `id`=1", _G.conn);
             }
             if(tmp[1]) {
-                // TODO implement update when autonomous is added
+                Bot.loadAutonomousList();
                 Query.Quiet("UPDATE `updater` SET `autonomous`=0 WHERE `id`=1", _G.conn);
             }
             if(tmp[2]) {

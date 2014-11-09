@@ -128,7 +128,7 @@ namespace bot {
             loadResponseList();
             Console.WriteLine("OK");
 
-            Console.Write("Loading autonomous routine list ...");
+            Console.Write("Loading autonomous routine list ... ");
             loadAutonomousList();
             Console.WriteLine("OK");
 
@@ -184,11 +184,17 @@ namespace bot {
                     }
                     Console.WriteLine("OK");
 
+                    Console.Write("Starting pulse thread ... ");
                     _G.startThread(Pulse.pulseThread);
+                    Console.WriteLine("OK");
 
+                    Console.Write("Preparing chat context ... ");
                     Chat.reloadContext(_G.driver);
+                    Console.WriteLine("OK");
 
-                    (new Thread(new ThreadStart(Bot.AutonomousThread))).Start();
+                    Console.Write("Starting autonomous thread ... ");
+                    _G.startThread(Bot.AutonomousThread);
+                    Console.WriteLine("OK");
 
                     Console.WriteLine(_G.propername + " has started successfully.");
 
@@ -198,10 +204,10 @@ namespace bot {
                         Message msg = Chat.waitForNewMessage(_G.driver);
                         if(!ignoreResponses) {
                             if(msg == null) break;
-                            if(msg.msg == "!dump") {
+                            /*if(msg.msg == "!dump") {
                                 foreach(Response r in responseList)
                                     Chat.sendMessage("IF " + r.condstr + " THEN " + r.responseType.Name);
-                            }
+                            }*/
                             if(msg.msg == "!update") {
                                 Bot.loadResponseList();
                                 Chat.sendMessage("response list updated");
