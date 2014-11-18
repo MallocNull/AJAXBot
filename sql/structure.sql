@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS `autonomous` (
   `parameters` longtext NOT NULL,
   `autolink` int(11) NOT NULL DEFAULT '-1',
   `linkrespond` tinyint(1) NOT NULL DEFAULT '1',
-  `timeout` bigint(20) NOT NULL,
-  `torandomness` bigint(20) NOT NULL,
+  `timeout` bigint(20) NOT NULL DEFAULT 1,
+  `torandomness` bigint(20) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
