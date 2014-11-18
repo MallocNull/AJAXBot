@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
 
 CREATE TABLE IF NOT EXISTS `autonomous` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
   `startday` int(11) NOT NULL DEFAULT '-1',
   `starttime` varchar(6) NOT NULL DEFAULT '-1,-1',
   `periodicity` bigint(20) NOT NULL DEFAULT '1440',
