@@ -204,10 +204,10 @@ namespace bot {
                         Message msg = Chat.waitForNewMessage(_G.driver);
                         if(!ignoreResponses) {
                             if(msg == null) break;
-                            /*if(msg.msg == "!dump") {
+                            if(msg.msg == "!dump") {
                                 foreach(Response r in responseList)
                                     Chat.sendMessage("IF " + r.condstr + " THEN " + r.responseType.Name);
-                            }*/
+                            }
                             if(msg.msg == "!update") {
                                 Bot.loadResponseList();
                                 Chat.sendMessage("response list updated");
